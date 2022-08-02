@@ -1,0 +1,57 @@
+
+
+func (controller *UserController) UpdateUsers(c echo.Context) error {
+
+	req := request.UpdateUsers{}
+	c.Bind(&req)
+
+	ctx := c.Request().Context()
+	_, result := controller.usecase.UpdateUsers(ctx, req.ToUpdateUserDomain())
+
+	if result != nil {
+		errCode, errMessage := err.CheckErrorAddUsers(result)
+		return controllers.ErrorResponse(c, errCode, errMessage)
+	}
+	return controllers.SuccessOkResponse(c)
+}
+
+func (user *AddUsers) ToAddUserDomain() uservice.UsersDomain {
+	return uservice.UsersDomain{
+		Username: user.Username,
+		Email:    user.Email,
+		Password: user.Password_1,
+	}
+}
+
+func (user *UpdateUsers) ToUpdateUserDomain() uservice.UsersDomain {
+	return uservice.UsersDomain{
+		Username: user.Username,
+		Email:    user.Email,
+		Password: user.Password_1,
+	}
+}
+
+func (usecase *UserUseCase) UpdateUsers(ctx context.Context, domain UsersDomain) (UsersDomain, error) {
+
+	if domain.ID == "" {
+		return UsersDomain{}, err.ErrIDEmpty
+	}
+	if domain.Username == "" {
+		return UsersDomain{}, err.ErrUsernameEmpty
+	}
+	if domain.Email == "" {
+		return UsersDomain{}, err.ErrEmailEmpty
+	}
+	if domain.Password == "" {
+		return UsersDomain{}, err.ErrPasswordEmpty
+	}
+
+	users, result := usecase.repo.UpdateUsers(ctx, domain)
+	if result != nil {
+		return UsersDomain{}, result
+	}
+	if (users.Created_At == time.Time{} && users.Email == "") {
+		return UsersDomain{}, err.ErrNotFound
+	}
+	return users, nil
+}
