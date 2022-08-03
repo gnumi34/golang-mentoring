@@ -12,11 +12,10 @@ var mustHave = []func(rune) bool{
 	unicode.IsDigit,
 }
 
-func ValidatePassword(password_1 string) bool {
-
+func ValidatePassword(password string) bool {
 	for _, checkRune := range mustHave {
 		valid := false
-		for _, r := range password_1 {
+		for _, r := range password {
 			if checkRune(r) {
 				valid = true
 			}
@@ -31,4 +30,12 @@ func ValidatePassword(password_1 string) bool {
 func ValidateEmail(email string) bool {
 	_, err := mail.ParseAddress(email)
 	return err == nil
+}
+
+func MustNotBeEmpty(value string) bool {
+	if value != "" {
+		return false
+	} else {
+		return true
+	}
 }

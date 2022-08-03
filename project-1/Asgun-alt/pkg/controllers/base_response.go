@@ -36,3 +36,9 @@ func ErrorResponse(c echo.Context, status int, errMessage error) error {
 	response.Error = errMessage.Error()
 	return c.JSON(http.StatusInternalServerError, response)
 }
+
+func SuccessMessageResponse(c echo.Context, message string) error {
+	response := OkResponse{}
+	response.Message = message
+	return c.JSON(http.StatusOK, response)
+}

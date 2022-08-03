@@ -2,6 +2,11 @@ package request
 
 import "github.com/gnumi34/golang-mentoring/tree/main/project-1/Asgun-alt/pkg/service/uservice"
 
+type GetUser struct {
+	Username string `json:"username"`
+	Password string `json:"password"`
+}
+
 type AddUsers struct {
 	Username   string `json:"username"`
 	Email      string `json:"email"`
@@ -15,6 +20,13 @@ type UpdateUsers struct {
 	Email      string `json:"email"`
 	Password_1 string `json:"password_1"`
 	Password_2 string `json:"password_2"`
+}
+
+func (user *GetUser) ToGetUserDomain() uservice.UsersDomain {
+	return uservice.UsersDomain{
+		Username: user.Username,
+		Password: user.Password,
+	}
 }
 
 func (user *AddUsers) ToUserDomain() uservice.UsersDomain {

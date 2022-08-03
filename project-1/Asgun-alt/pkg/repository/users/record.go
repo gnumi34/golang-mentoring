@@ -17,7 +17,7 @@ type Users struct {
 	Deleted_At gorm.DeletedAt `gorm:"index"`
 }
 
-func (user Users) ToUserDomain() uservice.UsersDomain {
+func (user *Users) ToUserDomain() uservice.UsersDomain {
 	return uservice.UsersDomain{
 		ID:         user.ID,
 		Username:   user.Username,

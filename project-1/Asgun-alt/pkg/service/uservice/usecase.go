@@ -17,7 +17,22 @@ func NewUserUsecCase(userRepo UsersRepositoryInterface, contextTimeout time.Dura
 	return &UserUseCase{repo: userRepo, ctx: contextTimeout}
 }
 
-func (usecase UserUseCase) AddUsers(ctx context.Context, userDomain UsersDomain) (UsersDomain, error) {
+func (usecase *UserUseCase) GetUser(ctx context.Context, userDomain UsersDomain) (UsersDomain, error) {
+	if userDomain.Username == "" {
+		return UsersDomain{}, err.ErrUsernameEmpty
+	}
+	if userDomain.Password == "" {
+		return UsersDomain{}, err.ErrPasswordEmpty
+	}
+
+	user, err := usecase.repo.GetUser(ctx, userDomain)
+	if err != nil {
+		return UsersDomain{}, err
+	}
+	return user, nil
+}
+
+func (usecase *UserUseCase) AddUsers(ctx context.Context, userDomain UsersDomain) (UsersDomain, error) {
 	if userDomain.ID == "" {
 		userDomain.ID = uuid.NewV4().String()
 	}
@@ -30,7 +45,7 @@ func (usecase UserUseCase) AddUsers(ctx context.Context, userDomain UsersDomain)
 	return users, nil
 }
 
-func (usecase UserUseCase) UpdateUsers(ctx context.Context, updateDomain UsersDomain) (UsersDomain, error) {
+func (usecase *UserUseCase) UpdateUsers(ctx context.Context, updateDomain UsersDomain) (UsersDomain, error) {
 
 	if updateDomain.ID == "" {
 		return UsersDomain{}, err.ErrIDEmpty
@@ -53,4 +68,12 @@ func (usecase UserUseCase) UpdateUsers(ctx context.Context, updateDomain UsersDo
 		return UsersDomain{}, err.ErrNotFound
 	}
 	return users, nil
+}
+
+func (usecase *UserUseCase) DeleteUsers(ctx context.Context, id string) error {
+	result := usecase.repo.DeleteUsers(ctx, id)
+	if result != nil {
+		return result
+	}
+	return nil
 }

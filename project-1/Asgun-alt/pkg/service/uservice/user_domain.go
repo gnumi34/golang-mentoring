@@ -16,11 +16,15 @@ type UsersDomain struct {
 }
 
 type UsersUsecaseInterface interface {
+	GetUser(ctx context.Context, userDomain UsersDomain) (UsersDomain, error)
 	AddUsers(ctx context.Context, userDomain UsersDomain) (UsersDomain, error)
 	UpdateUsers(ctx context.Context, userUpdateDomain UsersDomain) (UsersDomain, error)
+	DeleteUsers(CTX context.Context, id string) error
 }
 
 type UsersRepositoryInterface interface {
+	GetUser(ctx context.Context, userDomain UsersDomain) (UsersDomain, error)
 	AddUsers(ctx context.Context, userDomain UsersDomain) (UsersDomain, error)
 	UpdateUsers(ctx context.Context, userUpdateDomain UsersDomain) (UsersDomain, error)
+	DeleteUsers(CTX context.Context, id string) error
 }
