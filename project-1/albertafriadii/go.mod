@@ -2,8 +2,6 @@ module golang-mentoring/project-1/albertafriadii
 
 go 1.18
 
-require github.com/jinzhu/gorm v1.9.16
-
 require (
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible // indirect
 	github.com/jackc/chunkreader/v2 v2.0.1 // indirect
@@ -33,5 +31,6 @@ require (
 	github.com/joho/godotenv v1.4.0
 	github.com/labstack/echo v3.3.10+incompatible
 	github.com/lib/pq v1.10.6
+	github.com/satori/go.uuid v1.2.0
 	gorm.io/driver/postgres v1.3.8
 )
