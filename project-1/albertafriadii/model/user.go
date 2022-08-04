@@ -20,7 +20,7 @@ type User struct {
 }
 
 func HashPassword(password string) (string, error) {
-	bytes, err := bcrypt.GenerateFromPassword([]byte(password), 7)
+	bytes, err := bcrypt.GenerateFromPassword([]byte(password), 14)
 	return string(bytes), err
 }
 
@@ -68,7 +68,7 @@ func (u *User) UpdateAUser(db *gorm.DB, user_id string) (*User, error) {
 		},
 	).Error
 
-	if db.Error != nil {
+	if err != nil {
 		return &User{}, db.Error
 	}
 

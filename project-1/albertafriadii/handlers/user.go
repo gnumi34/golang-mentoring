@@ -42,9 +42,26 @@ func (h *Handler) CreateUser(c echo.Context) error {
 	upper, _ := regexp.Compile(`[A-Z]+?`)
 	resUpper := upper.MatchString(u.Password)
 
-	if u.Username == "" || u.Password == "" || u.RePassword == "" || u.Email == "" {
+	if u.Username == "" {
 		errorResp := model.Response{
-			Message: "Required Username, Password_1 and Password_2",
+			Message: "Required Username",
+			Error:   err,
+			Data:    nil,
+		}
+		return c.JSON(http.StatusBadRequest, errorResp)
+	}
+
+	if u.Email == "" {
+		errorResp := model.Response{
+			Message: "Required Email",
+			Error:   err,
+			Data:    nil,
+		}
+		return c.JSON(http.StatusBadRequest, errorResp)
+	}
+	if u.Password == "" || u.RePassword == "" {
+		errorResp := model.Response{
+			Message: "Required Password",
 			Error:   err,
 			Data:    nil,
 		}
@@ -60,7 +77,7 @@ func (h *Handler) CreateUser(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, errorResp)
 	}
 
-	if len(u.Password) < 8 || resSym == false || resNum == false || resUpper == false {
+	if len(u.Password) < 8 || !resSym || !resNum || !resUpper {
 		errorResp := model.Response{
 			Message: "Must be at least 8 letters, alphanumeric + symbol, has at least 1 uppercase letter, has at least 1 number, and has at least 1 symbol.",
 			Error:   err,
