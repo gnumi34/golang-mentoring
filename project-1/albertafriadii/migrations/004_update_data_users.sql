@@ -1,0 +1,3 @@
+UPDATE "users" SET "email"='abigail@gmail.com',"username"='abigailll',"updated_at"='2022-08-04 10:23:38' WHERE user_id = '7d02c63e-b3b9-4b47-a002-94852f704d25' AND "users"."deleted_at" IS NULL
+
+UPDATE "users" SET "email"='theoo@gmail.com',"password"='$2a$07$VdAjTan8Coop1pYQPjfPbOlEPzlYXL5iIxk.r7f7ZCZXI0i6yMrmW',"re_password"='',"username"='theodore',"updated_at"='2022-08-04 10:47:13.618' WHERE user_id = 'dc85563f-2445-483b-a455-5be4af23deb6' AND "users"."deleted_at" IS NULL

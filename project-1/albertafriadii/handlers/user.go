@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"golang-mentoring/project-1/albertafriadii/model"
-	"golang-mentoring/project-1/albertafriadii/repository"
 	"io/ioutil"
 	"net/http"
 	"regexp"
@@ -13,33 +12,27 @@ import (
 	"github.com/labstack/echo"
 )
 
-var userRepository repository.UserRepository
-
-func init() {
-	userRepository = repository.NewUserRepository()
-}
-
-func CreateUser(c echo.Context) error {
+func (h *Handler) CreateUser(c echo.Context) error {
 
 	body, err := ioutil.ReadAll(c.Request().Body)
 	if err != nil {
 		errorResp := model.Response{
-			Message: "Wrong Details",
+			Message: "Error getting information",
 			Error:   err,
 			Data:    nil,
 		}
-		return c.JSON(http.StatusBadRequest, errorResp)
+		return c.JSON(http.StatusNotAcceptable, errorResp)
 	}
 
-	u := &model.User{UserId: uuid.New().String()}
+	u := model.User{UserId: uuid.New().String()}
 	err = json.Unmarshal(body, &u)
 	if err != nil {
 		errorResp := model.Response{
-			Message: "Wrong Details",
+			Message: "Error getting information",
 			Error:   err,
 			Data:    nil,
 		}
-		return c.JSON(http.StatusBadRequest, errorResp)
+		return c.JSON(http.StatusNotAcceptable, errorResp)
 	}
 
 	num, _ := regexp.Compile(`[0-9]+?`)
@@ -76,31 +69,34 @@ func CreateUser(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, errorResp)
 	}
 
-	userCreated, err := userRepository.SaveAUser(*u)
+	userCreated, err := u.SaveAUser(h.DB)
 	if err != nil {
 		errorResp := model.Response{
-			Message: "Failed to create data user",
+			Message: "Failed to create user data",
 			Error:   err,
 			Data:    nil,
 		}
 		return c.JSON(http.StatusBadRequest, errorResp)
 	}
+
 	resp := model.Response{
-		Message: "Successfully to create data user",
-		Error:   err,
-		Data:    nil,
+		Message: "Succesfully to create user data",
+		Error:   nil,
+		Data:    userCreated,
 	}
-	c.Response().Header().Set("Location", fmt.Sprintf("%s%s%s", c.Request().Host, c.Request().RequestURI, userCreated))
+	c.Response().Header().Set("Location", fmt.Sprintf("%s%s%s", c.Request().Host, c.Request().RequestURI, userCreated.UserId))
+
 	return c.JSON(http.StatusCreated, resp)
 }
 
-func UpdateUser(c echo.Context) error {
-	u := &model.User{}
+func (h *Handler) UpdateUser(c echo.Context) error {
+	u := new(model.User)
+	// c.Bind(u)
 
 	body, err := ioutil.ReadAll(c.Request().Body)
 	if err != nil {
 		errorResp := model.Response{
-			Message: "Not Acceptable",
+			Message: "Error getting request Information",
 			Error:   err,
 			Data:    nil,
 		}
@@ -110,81 +106,85 @@ func UpdateUser(c echo.Context) error {
 	err = json.Unmarshal(body, &u)
 	if err != nil {
 		errorResp := model.Response{
-			Message: "Not Acceptable",
+			Message: "Error getting information",
 			Error:   err,
 			Data:    nil,
 		}
 		return c.JSON(http.StatusNotAcceptable, errorResp)
 	}
 
-	num, _ := regexp.Compile(`[0-9]+?`)
-	resNum := num.MatchString(u.Password)
-	sym, _ := regexp.Compile(`[^a-zA-Z0-9]+?`)
-	resSym := sym.MatchString(u.Password)
-	upper, _ := regexp.Compile(`[A-Z]+?`)
-	resUpper := upper.MatchString(u.Password)
-
-	if u.Username == "" || u.Password == "" || u.RePassword == "" || u.Email == "" {
+	if u.Username == "" {
 		errorResp := model.Response{
-			Message: "Required Username, Password_1 and Password_2",
+			Message: "Required Username",
 			Error:   err,
 			Data:    nil,
 		}
 		return c.JSON(http.StatusBadRequest, errorResp)
 	}
 
-	if u.Password != u.RePassword {
-		errorResp := model.Response{
-			Message: "Password not match",
-			Error:   err,
-			Data:    nil,
-		}
-		return c.JSON(http.StatusBadRequest, errorResp)
-	}
-
-	if len(u.Password) < 8 || resSym == false || resNum == false || resUpper == false {
-		errorResp := model.Response{
-			Message: "Must be at least 8 letters, alphanumeric + symbol, has at least 1 uppercase letter, has at least 1 number, and has at least 1 symbol.",
-			Error:   err,
-			Data:    nil,
-		}
-		return c.JSON(http.StatusBadRequest, errorResp)
-	}
-
-	updateUser, err := userRepository.UpdateAUser(*u, u.UserId)
+	updateUser, err := u.UpdateAUser(h.DB, c.Param("user_id"))
 	if err != nil {
 		errorResp := model.Response{
-			Message: "Error in updating user information",
+			Message: "Failed to update user data",
 			Error:   err,
 			Data:    nil,
 		}
-		return c.JSON(http.StatusBadGateway, errorResp)
+		return c.JSON(http.StatusNotAcceptable, errorResp)
 	}
+
 	resp := model.Response{
-		Message: "Error in updating user information",
-		Error:   err,
+		Message: "Succesfully to update user data",
+		Error:   nil,
 		Data:    updateUser,
 	}
+	c.Response().Header().Set("Location", fmt.Sprintf("%s%s%s", c.Request().Host, c.Request().RequestURI, updateUser.UserId))
+
 	return c.JSON(http.StatusOK, resp)
 }
 
-func DeleteUser(c echo.Context) error {
-	u := &model.User{}
+func (h *Handler) DeleteUser(c echo.Context) error {
+	u := model.User{}
 
-	deleteUser, err := userRepository.GetUser(c.Param(u.UserId))
-	if userRepository.DeleteAUser(*u, u.UserId) != nil {
+	deleteUser, err := u.DeleteAUser(h.DB, c.Param("user_id"))
+	if err != nil {
 		errorResp := model.Response{
-			Message: "Error in updating user information",
+			Message: "Failed to delete user data",
 			Error:   err,
 			Data:    nil,
 		}
-		return c.JSON(http.StatusBadGateway, errorResp)
+		return c.JSON(http.StatusNotAcceptable, errorResp)
 	}
-
 	resp := model.Response{
-		Message: "Error in updating user information",
-		Error:   err,
+		Message: "Succesfully to delete user data",
+		Error:   nil,
 		Data:    deleteUser,
 	}
+	c.Response().Header().Set("Location", fmt.Sprintf("%s%s%s", c.Request().Host, c.Request().RequestURI, deleteUser.UserId))
+
+	return c.JSON(http.StatusOK, resp)
+}
+
+func (h *Handler) GetUser(c echo.Context) error {
+	u := model.User{}
+
+	getUser, err := u.GetUser(h.DB, c.Param("user_id"))
+	if err != nil {
+		errorResp := model.Response{
+			Message: "Failed to get user data",
+			Error:   err,
+			Data:    nil,
+		}
+		return c.JSON(http.StatusNotAcceptable, errorResp)
+	}
+	resp := model.Response{
+		Message: "Succesfully to get user data",
+		Error:   nil,
+		Data: map[string]interface{}{
+			"username": u.Username,
+			"password": u.Password,
+		},
+	}
+	c.Response().Header().Set("Location", fmt.Sprintf("%s%s%s", c.Request().Host, c.Request().RequestURI, getUser.UserId))
+
 	return c.JSON(http.StatusOK, resp)
 }
