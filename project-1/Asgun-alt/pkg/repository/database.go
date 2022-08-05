@@ -6,7 +6,6 @@ import (
 
 	"github.com/gnumi34/golang-mentoring/tree/main/project-1/Asgun-alt/pkg/helper/encrypt"
 	dbusers "github.com/gnumi34/golang-mentoring/tree/main/project-1/Asgun-alt/pkg/repository/users"
-	usersRepo "github.com/gnumi34/golang-mentoring/tree/main/project-1/Asgun-alt/pkg/repository/users"
 	uuid "github.com/satori/go.uuid"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
@@ -46,7 +45,7 @@ func DbMigrate(db *gorm.DB) {
 		fmt.Println("Error hashing password")
 	}
 
-	res := db.Create(&usersRepo.Users{
+	res := db.Create(&dbusers.Users{
 		ID:       uuid.NewV4().String(),
 		Username: "Admin",
 		Email:    "admin@gmail.com",
@@ -57,7 +56,7 @@ func DbMigrate(db *gorm.DB) {
 		fmt.Println("Failed creating Admin account")
 	}
 
-	res = db.Create(&usersRepo.Users{
+	res = db.Create(&dbusers.Users{
 		ID:       uuid.NewV4().String(),
 		Username: "User",
 		Email:    "user@gmail.com",

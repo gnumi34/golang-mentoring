@@ -13,7 +13,7 @@ type UserUseCase struct {
 	ctx  time.Duration
 }
 
-func NewUserUsecCase(userRepo UsersRepositoryInterface, contextTimeout time.Duration) UsersRepositoryInterface {
+func NewUserUseCase(userRepo UsersRepositoryInterface, contextTimeout time.Duration) UsersUsecaseInterface {
 	return &UserUseCase{repo: userRepo, ctx: contextTimeout}
 }
 
@@ -52,12 +52,6 @@ func (usecase *UserUseCase) UpdateUsers(ctx context.Context, updateDomain UsersD
 	}
 	if updateDomain.Username == "" {
 		return UsersDomain{}, err.ErrUsernameEmpty
-	}
-	if updateDomain.Email == "" {
-		return UsersDomain{}, err.ErrEmailEmpty
-	}
-	if updateDomain.Password == "" {
-		return UsersDomain{}, err.ErrPasswordEmpty
 	}
 
 	users, result := usecase.repo.UpdateUsers(ctx, updateDomain)

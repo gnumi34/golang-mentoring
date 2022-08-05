@@ -2,16 +2,18 @@ package main
 
 import (
 	"fmt"
+	"net/http"
 	"os"
 	"time"
 
 	"github.com/gnumi34/golang-mentoring/tree/main/project-1/Asgun-alt/app/routes"
-	usercontroller "github.com/gnumi34/golang-mentoring/tree/main/project-1/Asgun-alt/pkg/controllers/ucontroller"
+	usercontroller "github.com/gnumi34/golang-mentoring/tree/main/project-1/Asgun-alt/pkg/controllers/usersctrl"
 	"github.com/gnumi34/golang-mentoring/tree/main/project-1/Asgun-alt/pkg/repository"
 	userRepo "github.com/gnumi34/golang-mentoring/tree/main/project-1/Asgun-alt/pkg/repository/users"
 	userUseCase "github.com/gnumi34/golang-mentoring/tree/main/project-1/Asgun-alt/pkg/service/uservice"
 	_ "github.com/joho/godotenv/autoload"
 	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v4/middleware"
 	"github.com/spf13/viper"
 	"gorm.io/gorm"
 )
@@ -31,8 +33,17 @@ func main() {
 	timeoutContext := time.Duration(viper.GetInt("context.timeout")) * time.Second
 	e := echo.New()
 
+	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
+		AllowOrigins: []string{"http://localhost:8000"},
+		AllowMethods: []string{
+			http.MethodGet,
+			http.MethodPut,
+			http.MethodPost,
+			http.MethodDelete},
+	}))
+
 	usersRepoInterface := userRepo.NewDBUserRepository(db)
-	usersUseCaseInterface := userUseCase.NewUserUsecCase(usersRepoInterface, timeoutContext)
+	usersUseCaseInterface := userUseCase.NewUserUseCase(usersRepoInterface, timeoutContext)
 	usersUseControllerInterface := usercontroller.NewUserController(usersUseCaseInterface)
 
 	initRoutes := routes.RouteControllerList{
