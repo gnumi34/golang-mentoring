@@ -2,7 +2,6 @@ package response
 
 import (
 	"time"
-
 	"github.com/gnumi34/golang-mentoring/tree/main/project-1/Asgun-alt/pkg/user/service/users"
 	"gorm.io/gorm"
 )
