@@ -1,0 +1,1 @@
+SELECT * FROM "users" WHERE username = 'bert' AND "users"."deleted_at" IS NULL
