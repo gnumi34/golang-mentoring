@@ -1,4 +1,4 @@
-module github.com/albertafriadii/tree/albert/buildAPI
+module github.com/albertafriadii/tree/fix/albertafriadii
 
 go 1.18
 

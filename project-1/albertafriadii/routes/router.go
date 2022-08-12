@@ -3,8 +3,8 @@ package routes
 import (
 	"net/http"
 
-	_ "github.com/albertafriadii/tree/albert/buildAPI/docs"
-	controller "github.com/albertafriadii/tree/albert/buildAPI/pkg/users/delivery/http"
+	_ "github.com/albertafriadii/tree/fix/albertafriadii/docs"
+	controller "github.com/albertafriadii/tree/fix/albertafriadii/pkg/users/delivery/http"
 	"github.com/labstack/echo/v4"
 
 	echoSwagger "github.com/swaggo/echo-swagger"

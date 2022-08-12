@@ -6,8 +6,8 @@ import (
 	"net/http"
 	"regexp"
 
-	"github.com/albertafriadii/tree/albert/buildAPI/config"
-	"github.com/albertafriadii/tree/albert/buildAPI/pkg/users/domain"
+	"github.com/albertafriadii/tree/fix/albertafriadii/pkg/config"
+	"github.com/albertafriadii/tree/fix/albertafriadii/pkg/domain"
 	"github.com/go-playground/locales/en"
 	ut "github.com/go-playground/universal-translator"
 	"github.com/go-playground/validator/v10"

@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/albertafriadii/tree/albert/buildAPI/config"
-	"github.com/albertafriadii/tree/albert/buildAPI/pkg/users/domain"
+	"github.com/albertafriadii/tree/fix/albertafriadii/pkg/config"
+	"github.com/albertafriadii/tree/fix/albertafriadii/pkg/domain"
 	uuid "github.com/satori/go.uuid"
 )
 

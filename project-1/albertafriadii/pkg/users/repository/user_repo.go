@@ -4,8 +4,8 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/albertafriadii/tree/albert/buildAPI/config"
-	"github.com/albertafriadii/tree/albert/buildAPI/pkg/users/domain"
+	"github.com/albertafriadii/tree/fix/albertafriadii/pkg/config"
+	"github.com/albertafriadii/tree/fix/albertafriadii/pkg/domain"
 	"gorm.io/gorm"
 )
 
