@@ -1,5 +1,5 @@
 create table users (
-	user_id VARCHAR(40),
+	user_id uuid DEFAULT uuid_generate_v4() PRIMARY KEY,
 	username VARCHAR(50),
 	email VARCHAR(50),
 	password VARCHAR(50),

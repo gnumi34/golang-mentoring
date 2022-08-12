@@ -3,17 +3,28 @@ package response
 import (
 	"time"
 
-	"github.com/gnumi34/golang-mentoring/tree/main/project-1/Asgun-alt/pkg/service/uservice"
+	"github.com/gnumi34/golang-mentoring/tree/main/project-1/Asgun-alt/pkg/user/service/users"
+	"gorm.io/gorm"
 )
 
-type UserResponse struct {
-	ID         string
+// type UserResponse struct {
+// 	ID         string
+// 	Username   string
+// 	Email      string
+// 	Password   string
+// 	Created_At time.Time
+// 	Updated_At time.Time
+// 	Deleted_At time.Time
+// }
+
+type User struct {
+	ID         string `gorm:"primaryKey"`
 	Username   string
-	Email      string
+	Email      string `gorm:"unique"`
 	Password   string
-	Created_At time.Time
-	Updated_At time.Time
-	Deleted_At time.Time
+	Created_At time.Time      `gorm:"autoCreateTime"`
+	Updated_At time.Time      `gorm:"autoUpdateTime"`
+	Deleted_At gorm.DeletedAt `gorm:"index"`
 }
 
 type GetUsersResponse struct {
@@ -24,8 +35,8 @@ type GetUsersResponse struct {
 	Updated_At time.Time `json:"updated_at"`
 }
 
-func FromUserDomain(userDomain uservice.UsersDomain) UserResponse {
-	return UserResponse{
+func FromUserDomain(userDomain users.UsersDomain) User {
+	return User{
 		ID:         userDomain.ID,
 		Username:   userDomain.Username,
 		Email:      userDomain.Email,
@@ -35,7 +46,7 @@ func FromUserDomain(userDomain uservice.UsersDomain) UserResponse {
 	}
 }
 
-func FromGetUserDomain(userDomain uservice.UsersDomain) GetUsersResponse {
+func FromGetUserDomain(userDomain users.UsersDomain) GetUsersResponse {
 	return GetUsersResponse{
 		ID:         userDomain.ID,
 		Username:   userDomain.Username,

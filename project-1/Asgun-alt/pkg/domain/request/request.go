@@ -1,20 +1,22 @@
 package request
 
-import "github.com/gnumi34/golang-mentoring/tree/main/project-1/Asgun-alt/pkg/service/uservice"
+import (
+	domain "github.com/gnumi34/golang-mentoring/tree/main/project-1/Asgun-alt/pkg/user/service/users"
+)
 
 type GetUser struct {
 	Username string `json:"username"`
 	Password string `json:"password"`
 }
 
-type AddUsers struct {
-	Username   string `json:"username"`
-	Email      string `json:"email"`
-	Password_1 string `json:"password_1"`
-	Password_2 string `json:"password_2"`
+type AddUser struct {
+	Username   string `json:"username" validate:"required"`
+	Email      string `json:"email" validate:"required,email"`
+	Password_1 string `json:"password_1" validate:"required,gte=8,eqfield=Password_2"`
+	Password_2 string `json:"password_2" validate:"required,gte=8"`
 }
 
-type UpdateUsers struct {
+type UpdateUser struct {
 	ID         string `json:"id"`
 	Username   string `json:"username"`
 	Email      string `json:"email"`
@@ -22,23 +24,23 @@ type UpdateUsers struct {
 	Password_2 string `json:"password_2"`
 }
 
-func (user *GetUser) ToGetUserDomain() uservice.UsersDomain {
-	return uservice.UsersDomain{
+func (user *GetUser) ToGetUserDomain() domain.UsersDomain {
+	return domain.UsersDomain{
 		Username: user.Username,
 		Password: user.Password,
 	}
 }
 
-func (user *AddUsers) ToUserDomain() uservice.UsersDomain {
-	return uservice.UsersDomain{
+func (user *AddUser) ToUserDomain() domain.UsersDomain {
+	return domain.UsersDomain{
 		Username: user.Username,
 		Email:    user.Email,
 		Password: user.Password_1,
 	}
 }
 
-func (user *UpdateUsers) ToUpdateUserDomain() uservice.UsersDomain {
-	return uservice.UsersDomain{
+func (user *UpdateUser) ToUpdateUserDomain() domain.UsersDomain {
+	return domain.UsersDomain{
 		ID:       user.ID,
 		Username: user.Username,
 		Email:    user.Email,

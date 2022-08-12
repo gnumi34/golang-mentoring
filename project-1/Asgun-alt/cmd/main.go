@@ -4,22 +4,33 @@ import (
 	"fmt"
 	"net/http"
 	"os"
-	"time"
 
 	"github.com/gnumi34/golang-mentoring/tree/main/project-1/Asgun-alt/app/routes"
-	usercontroller "github.com/gnumi34/golang-mentoring/tree/main/project-1/Asgun-alt/pkg/controllers/usersctrl"
-	"github.com/gnumi34/golang-mentoring/tree/main/project-1/Asgun-alt/pkg/repository"
-	userRepo "github.com/gnumi34/golang-mentoring/tree/main/project-1/Asgun-alt/pkg/repository/users"
-	userUseCase "github.com/gnumi34/golang-mentoring/tree/main/project-1/Asgun-alt/pkg/service/uservice"
+	"github.com/gnumi34/golang-mentoring/tree/main/project-1/Asgun-alt/pkg/helper"
+	userController "github.com/gnumi34/golang-mentoring/tree/main/project-1/Asgun-alt/pkg/user/controllers/users"
+	userRepo "github.com/gnumi34/golang-mentoring/tree/main/project-1/Asgun-alt/pkg/user/repository/users"
+	userUseCase "github.com/gnumi34/golang-mentoring/tree/main/project-1/Asgun-alt/pkg/user/service/users"
 	_ "github.com/joho/godotenv/autoload"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
-	"github.com/spf13/viper"
 	"gorm.io/gorm"
 )
 
+// @title Go Echo Library Management
+// @version 1.0
+// @description a simple Go library management with echo framework
+// @termsOfService http://swagger.io/terms/
+
+// @contact.name API Support
+// @contact.url http://www.swagger.io/support
+// @contact.email support@swagger.io
+
+// @host localhost:8000
+// @BasePath /
+// @Schemes http
+
 func main() {
-	DBconfig := &repository.Config{
+	DBconfig := &helper.Config{
 		Host:     os.Getenv("DB_HOST"),
 		Port:     os.Getenv("DB_PORT"),
 		User:     os.Getenv("DB_USER"),
@@ -29,8 +40,6 @@ func main() {
 	}
 	var db *gorm.DB = DBconfig.InitDB()
 
-	repository.DbMigrate(db)
-	timeoutContext := time.Duration(viper.GetInt("context.timeout")) * time.Second
 	e := echo.New()
 
 	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
@@ -43,8 +52,8 @@ func main() {
 	}))
 
 	usersRepoInterface := userRepo.NewDBUserRepository(db)
-	usersUseCaseInterface := userUseCase.NewUserUseCase(usersRepoInterface, timeoutContext)
-	usersUseControllerInterface := usercontroller.NewUserController(usersUseCaseInterface)
+	usersUseCaseInterface := userUseCase.NewUserUseCase(usersRepoInterface)
+	usersUseControllerInterface := userController.NewUserController(usersUseCaseInterface)
 
 	initRoutes := routes.RouteControllerList{
 		UsersController: *usersUseControllerInterface,
