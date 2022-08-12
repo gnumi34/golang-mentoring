@@ -43,7 +43,11 @@ func Validator(i interface{}) interface{} {
 	trans, _ := uni.GetTranslator("en")
 
 	validate = validator.New()
-	en_translations.RegisterDefaultTranslations(validate, trans)
+	errCheck := en_translations.RegisterDefaultTranslations(validate, trans)
+	if errCheck != nil {
+		arrError := []string{}
+		return append(arrError, errCheck.Error())
+	}
 	return TranslateErr(trans, i)
 }
 
@@ -60,24 +64,3 @@ func TranslateErr(trans ut.Translator, input interface{}) interface{} {
 	}
 	return nil
 }
-
-// func Validator(i interface{}) error {
-// 	en := en.New()
-// 	uni = ut.New(en, en)
-// 	trans, _ := uni.GetTranslator("en")
-
-// 	validate = validator.New()
-// 	en_translations.RegisterDefaultTranslations(validate, trans)
-// 	return TranslateErr(trans, i)
-// }
-
-// func TranslateErr(trans ut.Translator, input interface{}) error {
-// 	err := validate.Struct(input)
-// 	if err != nil {
-// 		errs := err.(validator.ValidationErrors)
-// 		for _, e := range errs {
-// 			return fmt.Errorf("%v", e.Translate(trans))
-// 		}
-// 	}
-// 	return nil
-// }
