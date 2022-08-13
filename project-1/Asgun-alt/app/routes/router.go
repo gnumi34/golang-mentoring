@@ -3,28 +3,16 @@ package routes
 import (
 	"net/http"
 
-	"github.com/gnumi34/golang-mentoring/tree/main/project-1/Asgun-alt/pkg/controllers/usersctrl"
-	_ "github.com/gnumi34/golang-mentoring/tree/main/project-1/Asgun-alt/pkg/docs"
+
+	_ "github.com/gnumi34/golang-mentoring/tree/main/project-1/Asgun-alt/docs"
+	"github.com/gnumi34/golang-mentoring/tree/main/project-1/Asgun-alt/pkg/user/controllers/users"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	echoSwagger "github.com/swaggo/echo-swagger"
 )
 
-// @title Go Echo Library Management
-// @version 1.0
-// @description a simple Go library management with echo framework
-// @termsOfService http://swagger.io/terms/
-
-// @contact.name API Support
-// @contact.url http://www.swagger.io/support
-// @contact.email support@swagger.io
-
-// @host localhost:8000
-// @BasePath /
-// @Schemes http
-
 type RouteControllerList struct {
-	UsersController usersctrl.UserController
+	UsersController users.UserController
 }
 
 func (controller RouteControllerList) RoutesUser(e *echo.Echo) {
@@ -34,8 +22,9 @@ func (controller RouteControllerList) RoutesUser(e *echo.Echo) {
 		return c.String(http.StatusOK, "Hello the program is functioning properly, welcome to the user routes.")
 	})
 	e.GET("/swagger/*", echoSwagger.WrapHandler)
-	e.GET("/users/get-user", controller.UsersController.GetUser)
-	e.POST("/users", controller.UsersController.AddUsers)
-	e.PUT("/users", controller.UsersController.UpdateUsers)
-	e.DELETE("users/:id", controller.UsersController.DeleteUsers)
+
+	e.POST("/users/get-user", controller.UsersController.GetUser)
+	e.POST("/users", controller.UsersController.AddUser)
+	e.PUT("/users", controller.UsersController.UpdateUser)
+	e.DELETE("users/:id", controller.UsersController.DeleteUser)
 }

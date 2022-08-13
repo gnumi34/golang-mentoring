@@ -1,11 +1,12 @@
 create table users (
-	user_id VARCHAR(40),
+	user_id uuid DEFAULT uuid_generate_v4(),
 	username VARCHAR(50),
 	email VARCHAR(50),
 	password VARCHAR(50),
 	created_at timestamp with time zone,
 	updated_at timestamp with time zone,
 	deleted_at timestamp with time zone,
+  PRIMARY KEY(user_id))
 );
 
 insert into users (user_id, username, email, password, created_at, updated_at, deleted_at) values ('e5deacfe-dfdf-4525-ae49-cceb27c442b9', 'aalfonso0', 'nzorzutti0@shutterfly.com', 'WUdpPNMGEJz9', '6/4/2022', '7/24/2022', '1/21/2022');
