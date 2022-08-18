@@ -26,15 +26,6 @@ func (uc *UsersUseCase) FindAll(ctx context.Context) ([]users.User, error) {
 	return users, nil
 }
 
-func (uc *UsersUseCase) ValidateUser(ctx context.Context, req *users.ValidateUserRequest) (bool, error) {
-	user, err := uc.DBRepo.FindByUserName(ctx, req.UserName)
-	if err != nil {
-		return false, err
-	}
-
-	return helpers.CheckPasswordHash(req.Password, user.Password), nil
-}
-
 func (uc *UsersUseCase) CreateUser(ctx context.Context, req *users.User) (*users.User, error) {
 	var err error
 

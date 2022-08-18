@@ -11,6 +11,10 @@ import (
 	"time"
 
 	"github.com/gnumi34/golang-mentoring/project-1/gnumi34/cmd/config"
+	authHTTPHandler "github.com/gnumi34/golang-mentoring/project-1/gnumi34/pkg/auth/handler/http"
+	authDBRepository "github.com/gnumi34/golang-mentoring/project-1/gnumi34/pkg/auth/repository/db"
+	authUseCase "github.com/gnumi34/golang-mentoring/project-1/gnumi34/pkg/auth/usecase"
+	"github.com/gnumi34/golang-mentoring/project-1/gnumi34/pkg/domain/auth"
 	"github.com/gnumi34/golang-mentoring/project-1/gnumi34/pkg/domain/users"
 	customMiddleware "github.com/gnumi34/golang-mentoring/project-1/gnumi34/pkg/middleware"
 	usersHTTPHandler "github.com/gnumi34/golang-mentoring/project-1/gnumi34/pkg/users/handler/http"
@@ -79,6 +83,7 @@ func main() {
 	api := e.Group("/api")
 	{
 		InitUserHandler(api, db)
+		InitAuthHandler(api, db)
 	}
 
 	srv := &http.Server{
@@ -110,12 +115,16 @@ func main() {
 	}
 }
 
-func InitUserHandler(appGroup *echo.Group, db *gorm.DB, middlewares ...echo.MiddlewareFunc) {
+func InitUserHandler(appGroup *echo.Group, db *gorm.DB) {
 	var dbRepository users.DBRepository = usersDBRepository.NewUsersDBRepository(db)
 	var useCase users.UseCase = usersUseCase.NewUsersUseCase(dbRepository)
 
-	if len(middlewares) > 0 {
-		appGroup.Use(middlewares...)
-	}
 	usersHTTPHandler.NewUsersHTTPHandler(appGroup, useCase)
+}
+
+func InitAuthHandler(appGroup *echo.Group, db *gorm.DB) {
+	var dbRepository auth.DBRepository = authDBRepository.NewUsersDBRepository(db)
+	var useCase auth.UseCase = authUseCase.NewAuthUseCase(dbRepository)
+
+	authHTTPHandler.NewAuthHTTPHandler(appGroup, useCase)
 }

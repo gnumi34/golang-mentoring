@@ -36,17 +36,6 @@ func (r *UsersDBRepository) FindAll(ctx context.Context) ([]users.User, error) {
 	return res, nil
 }
 
-func (r *UsersDBRepository) FindByUserName(ctx context.Context, username string) (*users.User, error) {
-	var res users.User
-
-	err := r.DB.WithContext(ctx).First(&res, "username = ?", username).Error
-	if err != nil {
-		return nil, fmt.Errorf("UsersDBRepository.FindByUserName: %w", err)
-	}
-
-	return &res, nil
-}
-
 func (r *UsersDBRepository) FindByID(ctx context.Context, ID uint) (*users.User, error) {
 	var res users.User
 

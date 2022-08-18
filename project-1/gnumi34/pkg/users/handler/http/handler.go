@@ -10,8 +10,10 @@ import (
 	"github.com/gnumi34/golang-mentoring/project-1/gnumi34/pkg/domain/common"
 	"github.com/gnumi34/golang-mentoring/project-1/gnumi34/pkg/domain/users"
 	"github.com/gnumi34/golang-mentoring/project-1/gnumi34/pkg/helpers"
+	customMiddleware "github.com/gnumi34/golang-mentoring/project-1/gnumi34/pkg/middleware"
 	"github.com/go-playground/validator/v10"
 	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v4/middleware"
 	"gorm.io/gorm"
 )
 
@@ -25,12 +27,12 @@ func NewUsersHTTPHandler(appGroup *echo.Group, uc users.UseCase) {
 		UseCase: uc,
 	}
 
+	jwtConfig := customMiddleware.NewJWTMiddlewareConfig()
 	usersGroup := appGroup.Group("/users")
-	usersGroup.GET("", handler.FindAll)
-	usersGroup.POST("/login", handler.ValidateUser)
+	usersGroup.GET("", handler.FindAll, middleware.JWTWithConfig(jwtConfig))
 	usersGroup.POST("", handler.AddUser)
-	usersGroup.PUT("/:id", handler.UpdateUser)
-	usersGroup.DELETE("/:id", handler.DeleteUser)
+	usersGroup.PUT("/:id", handler.UpdateUser, middleware.JWTWithConfig(jwtConfig))
+	usersGroup.DELETE("/:id", handler.DeleteUser, middleware.JWTWithConfig(jwtConfig))
 	return
 }
 
@@ -56,58 +58,6 @@ func (h *UsersHTTPHandler) FindAll(ctx echo.Context) error {
 	}
 
 	return h.ResponseJSON(ctx, common.DataSuccess, users.ToMultipleResponse(res), nil, http.StatusOK)
-}
-
-// ValidateUser godoc
-// @Summary      Validate User
-// @Description  Validate User Account
-// @Tags         users
-// @Accept       json
-// @Produce      json
-// @Param        jsonBody   body      users.ValidateUserRequest  true  "Validate User Request Body"
-// @Success      200  {object}  common.Response{message=common.DataSuccess,data=valid user,code=200}
-// @Failure      400  {object}  common.Response{message=common.ValidationError,code=400}
-// @Failure      404  {object}  common.Response{message=common.DataFailed,errors=common.RecordNotFound,code=404}
-// @Failure      500  {object}  common.Response{message=common.DataFailed,errors=common.UnknownError,code=500}
-// @Router       /login [post]
-func (h *UsersHTTPHandler) ValidateUser(ctx echo.Context) error {
-	var request users.ValidateUserRequest
-	var isValid bool
-	var err error
-	valid := ctx.Get("validator").(*config.CustomValidator)
-
-	err = ctx.Bind(&request)
-	if err != nil {
-		log.Println(err.Error())
-		return h.ResponseJSON(ctx, common.DataFailed, nil, common.UnknownError, http.StatusUnprocessableEntity)
-	}
-
-	err = ctx.Validate(&request)
-	if err != nil {
-		if valErr, ok := err.(validator.ValidationErrors); ok {
-			return h.ResponseJSON(ctx, common.ValidationError, nil, valErr.Translate(valid.Translator), http.StatusBadRequest)
-		}
-
-		log.Println(err.Error())
-		return h.ResponseJSON(ctx, common.DataFailed, nil, err.Error(), http.StatusNotFound)
-	}
-
-	isValid, err = h.UseCase.ValidateUser(ctx.Request().Context(), &request)
-	if err != nil {
-		log.Println(err.Error())
-
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return h.ResponseJSON(ctx, common.DataFailed, nil, common.RecordNotFound, http.StatusNotFound)
-		}
-
-		return h.ResponseJSON(ctx, common.DataFailed, nil, common.UnknownError, http.StatusInternalServerError)
-	}
-
-	if !isValid {
-		return h.ResponseJSON(ctx, common.DataFailed, nil, common.PasswordNotMatch, http.StatusNotFound)
-	}
-
-	return h.ResponseJSON(ctx, common.DataSuccess, "valid user", nil, http.StatusOK)
 }
 
 // AddUser godoc
