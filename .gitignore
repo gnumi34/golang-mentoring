@@ -1,0 +1,4 @@
+# ignore ALL .env File
+*.env
+
+config.json
