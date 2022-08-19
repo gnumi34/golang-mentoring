@@ -1,5 +1,4 @@
 # ignore ALL .env File
 *.env
 
-# ignore vendor
-vendor/*
+config.json

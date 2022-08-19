@@ -11,4 +11,7 @@ var (
 	ErrPasswordEmpty      = errors.New("password cannot be empty")
 	ErrNoUser             = errors.New("there is no such user")
 	ErrServiceUnavailable = errors.New("server is temporarily unable to handle a request")
+	ErrUnauthorized       = errors.New("error unauthorized")
+	ErrRecordNotFound     = errors.New("record not found")
+	ErrWrongPassword      = errors.New("wrong password")
 )

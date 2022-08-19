@@ -12,12 +12,14 @@ type UsersDomain struct {
 	Username   string
 	Email      string
 	Password   string
+	Token      string
 	Created_At time.Time
 	Updated_At time.Time
 	Deleted_At gorm.DeletedAt
 }
 
 type UsersUsecaseInterface interface {
+	Login(ctx context.Context, userDomain UsersDomain) (UsersDomain, error)
 	GetUser(ctx context.Context, userDomain UsersDomain) (UsersDomain, error)
 	AddUser(ctx context.Context, userDomain UsersDomain) (UsersDomain, error)
 	UpdateUser(ctx context.Context, userUpdateDomain UsersDomain) (UsersDomain, error)
@@ -25,6 +27,7 @@ type UsersUsecaseInterface interface {
 }
 
 type UsersRepositoryInterface interface {
+	Login(ctx context.Context, userDomain UsersDomain) (UsersDomain, error)
 	GetUser(ctx context.Context, userDomain UsersDomain) (UsersDomain, error)
 	AddUser(ctx context.Context, userDomain UsersDomain) (UsersDomain, error)
 	UpdateUser(ctx context.Context, userUpdateDomain UsersDomain) (UsersDomain, error)

@@ -18,18 +18,32 @@ func NewDBUserRepository(gormDB *gorm.DB) users.UsersRepositoryInterface {
 	return &DBUserRepository{db: gormDB}
 }
 
+func (repo *DBUserRepository) Login(ctx context.Context, userDomain users.UsersDomain) (users.UsersDomain, error) {
+	user := response.FromLoginUserDomain(userDomain)
+
+	result := repo.db.First(&user, "username = ?", user.Username)
+	if result.Error != nil {
+		return users.UsersDomain{}, errcode.ErrRecordNotFound
+	}
+
+	match := encrypt.CheckPassword(userDomain.Password, user.Password)
+	if !match {
+		return users.UsersDomain{}, errcode.ErrWrongPassword
+	}
+	return users.UsersDomain(user), nil
+}
+
 func (repo *DBUserRepository) GetUser(ctx context.Context, userDomain users.UsersDomain) (users.UsersDomain, error) {
 	var user response.User
 	result := repo.db.Where("username = ?", userDomain.Username).Find(&user)
 	if result.Error != nil {
-		return users.UsersDomain{}, result.Error
+		return users.UsersDomain{}, errcode.ErrRecordNotFound
 	}
 
-	err := encrypt.CheckPassword(userDomain.Password, user.Password)
-	if err != nil {
-		return users.UsersDomain{}, result.Error
+	match := encrypt.CheckPassword(userDomain.Password, user.Password)
+	if !match {
+		return users.UsersDomain{}, errcode.ErrWrongPassword
 	}
-
 	return users.UsersDomain(user), nil
 }
 
@@ -47,7 +61,6 @@ func (repo *DBUserRepository) AddUser(ctx context.Context, userDomain users.User
 	if result.Error != nil {
 		return users.UsersDomain{}, result.Error
 	}
-
 	return users.UsersDomain(newUser), nil
 }
 

@@ -52,3 +52,19 @@ func ErrorGetUserCheck(thisError error) (int, error) {
 	}
 	return http.StatusInternalServerError, ErrInternalServer
 }
+
+func ErrorUnauthorizedCheck(thisError error) (int, error) {
+	if errors.Is(thisError, ErrUnauthorized) {
+		return http.StatusUnauthorized, ErrUnauthorized
+	} else if errors.Is(thisError, ErrUsernameEmpty) {
+		return http.StatusBadRequest, ErrUsernameEmpty
+	} else if errors.Is(thisError, ErrPasswordEmpty) {
+		return http.StatusBadRequest, ErrPasswordEmpty
+	} else if errors.Is(thisError, ErrWrongPassword) {
+		return http.StatusBadRequest, ErrWrongPassword
+	} else if errors.Is(thisError, ErrRecordNotFound) {
+		return http.StatusNotFound, ErrRecordNotFound
+	}
+
+	return http.StatusInternalServerError, ErrInternalServer
+}

@@ -4,6 +4,11 @@ import (
 	domain "github.com/gnumi34/golang-mentoring/tree/main/project-1/Asgun-alt/pkg/user/service/users"
 )
 
+type LoginUser struct {
+	Username string `json:"username"`
+	Password string `json:"password"`
+}
+
 type GetUser struct {
 	Username string `json:"username"`
 	Password string `json:"password"`
@@ -22,6 +27,13 @@ type UpdateUser struct {
 	Email      string `json:"email"`
 	Password_1 string `json:"password_1"`
 	Password_2 string `json:"password_2"`
+}
+
+func (user *LoginUser) ToLoginDomain() domain.UsersDomain {
+	return domain.UsersDomain{
+		Username: user.Username,
+		Password: user.Password,
+	}
 }
 
 func (user *GetUser) ToGetUserDomain() domain.UsersDomain {

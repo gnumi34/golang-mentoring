@@ -3,16 +3,41 @@ package users
 import (
 	"context"
 
+	"github.com/gnumi34/golang-mentoring/tree/main/project-1/Asgun-alt/app/middlewares"
 	"github.com/gnumi34/golang-mentoring/tree/main/project-1/Asgun-alt/pkg/helper/errcode"
 	uuid "github.com/satori/go.uuid"
 )
 
 type UserUseCase struct {
-	repo UsersRepositoryInterface
+	ConfigJWT *middlewares.ConfigJWT
+	repo      UsersRepositoryInterface
 }
 
-func NewUserUseCase(userRepo UsersRepositoryInterface) UsersUsecaseInterface {
-	return &UserUseCase{repo: userRepo}
+func NewUserUseCase(userRepo UsersRepositoryInterface, configJWT *middlewares.ConfigJWT) UsersUsecaseInterface {
+	return &UserUseCase{
+		repo:      userRepo,
+		ConfigJWT: configJWT,
+	}
+}
+
+func (usecase *UserUseCase) Login(ctx context.Context, userDomain UsersDomain) (UsersDomain, error) {
+	if userDomain.Username == "" {
+		return UsersDomain{}, errcode.ErrUsernameEmpty
+	}
+	if userDomain.Password == "" {
+		return UsersDomain{}, errcode.ErrPasswordEmpty
+	}
+
+	user, err := usecase.repo.Login(ctx, userDomain)
+	if err != nil {
+		return UsersDomain{}, err
+	}
+
+	user.Token, err = usecase.ConfigJWT.GenerateToken(user.ID)
+	if err != nil {
+		return UsersDomain{}, err
+	}
+	return user, nil
 }
 
 func (usecase *UserUseCase) GetUser(ctx context.Context, userDomain UsersDomain) (UsersDomain, error) {

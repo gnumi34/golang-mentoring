@@ -4,5 +4,9 @@
     },
     "context": {
         "timeout": 2
+    },
+    "jwt": {
+        "secretKey": "@GOLIBsec1011tKey080",
+        "expired": 24
     }
 }

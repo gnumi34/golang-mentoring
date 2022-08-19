@@ -21,6 +21,61 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/login": {
+            "post": {
+                "description": "If user is exists in the database, Generate and RETURN user token.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Login"
+                ],
+                "summary": "Login",
+                "parameters": [
+                    {
+                        "description": "Login",
+                        "name": "User",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/request.LoginUser"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/user/protected": {
+            "get": {
+                "description": "Protected route can only be accessed if the the user has valid JWT token.",
+                "tags": [
+                    "Protected"
+                ],
+                "summary": "Protected user route",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "default": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJVc2VySUQiOiJkMTk3YzY1Ny0zMDY1LTQ0MjYtYmY4ZS05YmJhYWYwYjY5MDciLCJleHAiOjE2NjA4NzQ3MjR9.FV-RV_55zOMO4qD1vjmY0m1ZmeRsvDfMchlbqXjcpkc",
+                        "description": "Insert your access token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
         "/users/": {
             "put": {
                 "description": "Update the user to the database.",
@@ -197,6 +252,17 @@ const docTemplate = `{
                 }
             }
         },
+        "request.LoginUser": {
+            "type": "object",
+            "properties": {
+                "password": {
+                    "type": "string"
+                },
+                "username": {
+                    "type": "string"
+                }
+            }
+        },
         "request.UpdateUser": {
             "type": "object",
             "properties": {
@@ -233,6 +299,9 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "password": {
+                    "type": "string"
+                },
+                "token": {
                     "type": "string"
                 },
                 "updated_At": {

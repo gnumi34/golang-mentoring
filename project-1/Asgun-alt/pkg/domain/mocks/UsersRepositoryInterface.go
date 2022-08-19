@@ -5,7 +5,7 @@ package mocks
 import (
 	context "context"
 
-	uservice "github.com/gnumi34/golang-mentoring/tree/main/project-1/Asgun-alt/pkg/service/uservice"
+	uservice "github.com/gnumi34/golang-mentoring/tree/main/project-1/Asgun-alt/pkg/user/service/users"
 	mock "github.com/stretchr/testify/mock"
 )
 
@@ -15,7 +15,7 @@ type UsersRepositoryInterface struct {
 }
 
 // AddUsers provides a mock function with given fields: ctx, userDomain
-func (_m *UsersRepositoryInterface) AddUsers(ctx context.Context, userDomain uservice.UsersDomain) (uservice.UsersDomain, error) {
+func (_m *UsersRepositoryInterface) AddUser(ctx context.Context, userDomain uservice.UsersDomain) (uservice.UsersDomain, error) {
 	ret := _m.Called(ctx, userDomain)
 
 	var r0 uservice.UsersDomain
@@ -36,7 +36,7 @@ func (_m *UsersRepositoryInterface) AddUsers(ctx context.Context, userDomain use
 }
 
 // DeleteUsers provides a mock function with given fields: CTX, id
-func (_m *UsersRepositoryInterface) DeleteUsers(CTX context.Context, id string) error {
+func (_m *UsersRepositoryInterface) DeleteUser(CTX context.Context, id string) error {
 	ret := _m.Called(CTX, id)
 
 	var r0 error
@@ -71,7 +71,7 @@ func (_m *UsersRepositoryInterface) GetUser(ctx context.Context, userDomain user
 }
 
 // UpdateUsers provides a mock function with given fields: ctx, userUpdateDomain
-func (_m *UsersRepositoryInterface) UpdateUsers(ctx context.Context, userUpdateDomain uservice.UsersDomain) (uservice.UsersDomain, error) {
+func (_m *UsersRepositoryInterface) UpdateUser(ctx context.Context, userUpdateDomain uservice.UsersDomain) (uservice.UsersDomain, error) {
 	ret := _m.Called(ctx, userUpdateDomain)
 
 	var r0 uservice.UsersDomain

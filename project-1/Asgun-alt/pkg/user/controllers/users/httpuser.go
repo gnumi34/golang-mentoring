@@ -4,6 +4,7 @@ import (
 	"errors"
 	"net/http"
 
+	"github.com/gnumi34/golang-mentoring/tree/main/project-1/Asgun-alt/app/middlewares"
 	"github.com/gnumi34/golang-mentoring/tree/main/project-1/Asgun-alt/pkg/common/controller"
 	"github.com/gnumi34/golang-mentoring/tree/main/project-1/Asgun-alt/pkg/domain/request"
 	"github.com/gnumi34/golang-mentoring/tree/main/project-1/Asgun-alt/pkg/helper/errcode"
@@ -23,6 +24,49 @@ type UserController struct {
 
 func NewUserController(userUsecase users.UsersUsecaseInterface) *UserController {
 	return &UserController{usecase: userUsecase}
+}
+
+// Login godoc
+// @Summary      Login
+// @Description  If user is exists in the database, Generate and RETURN user token.
+// @Param 		 User body request.LoginUser true "Login"
+// @Tags         Login
+// @Accept       json
+// @Produce      json
+// @Success      200
+// @Router       /login [post]
+func (uc *UserController) Login(c echo.Context) error {
+	req := request.LoginUser{}
+	bindErr := c.Bind(&req)
+	if bindErr != nil {
+		return uc.handler.ErrorResponse(c, badRequest, errors.New("bind data error"))
+	}
+
+	ctx := c.Request().Context()
+	user, err := uc.usecase.Login(ctx, req.ToLoginDomain())
+	if err != nil {
+		errCode, errMessage := errcode.ErrorUnauthorizedCheck(err)
+		return uc.handler.ErrorResponse(c, errCode, errMessage)
+	}
+
+	return uc.handler.SuccessDataResponse(c, map[string]string{"token": user.Token})
+}
+
+// Protected route godoc
+// @Summary      Protected user route
+// @Description  Protected route can only be accessed if the the user has valid JWT token.
+// @Param 		 Authorization header string true "Insert your access token" default(Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJVc2VySUQiOiJkMTk3YzY1Ny0zMDY1LTQ0MjYtYmY4ZS05YmJhYWYwYjY5MDciLCJleHAiOjE2NjA4NzQ3MjR9.FV-RV_55zOMO4qD1vjmY0m1ZmeRsvDfMchlbqXjcpkc)
+// @Tags         Protected
+// @Success      200
+// @Router       /user/protected [get]
+func (uc *UserController) Protected(c echo.Context) error {
+	token, err := middlewares.ValidateAuthorization(c)
+	if token == nil || err != nil {
+		status, err := errcode.ErrorUnauthorizedCheck(err)
+		return uc.handler.ErrorResponse(c, status, err)
+	}
+
+	return uc.handler.SuccessMessageResponse(c, "hello this route is protected")
 }
 
 // GetUser godoc

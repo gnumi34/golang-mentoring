@@ -2,8 +2,11 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"net/http"
 	"os"
+
+	"github.com/gnumi34/golang-mentoring/tree/main/project-1/Asgun-alt/app/middlewares"
 	"github.com/gnumi34/golang-mentoring/tree/main/project-1/Asgun-alt/app/routes"
 	"github.com/gnumi34/golang-mentoring/tree/main/project-1/Asgun-alt/pkg/helper"
 	userController "github.com/gnumi34/golang-mentoring/tree/main/project-1/Asgun-alt/pkg/user/controllers/users"
@@ -12,6 +15,7 @@ import (
 	_ "github.com/joho/godotenv/autoload"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
+	"github.com/spf13/viper"
 	"gorm.io/gorm"
 )
 
@@ -28,6 +32,13 @@ import (
 // @BasePath /
 // @Schemes http
 
+func init() {
+	viper.SetConfigFile(`config.json`)
+	if err := viper.ReadInConfig(); err != nil {
+		log.Println(err)
+	}
+}
+
 func main() {
 	DBconfig := &helper.Config{
 		Host:     os.Getenv("DB_HOST"),
@@ -41,6 +52,12 @@ func main() {
 
 	e := echo.New()
 
+	// Configure middleware with the custom claims type
+	configJWT := middlewares.ConfigJWT{
+		SecretKey:       viper.GetString(`jwt.secretkey`),
+		ExpiresDuration: viper.GetInt(`jwt.expired`),
+	}
+
 	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
 		AllowOrigins: []string{"http://localhost:8000"},
 		AllowMethods: []string{
@@ -51,13 +68,14 @@ func main() {
 	}))
 
 	usersRepoInterface := userRepo.NewDBUserRepository(db)
-	usersUseCaseInterface := userUseCase.NewUserUseCase(usersRepoInterface)
+	usersUseCaseInterface := userUseCase.NewUserUseCase(usersRepoInterface, &configJWT)
 	usersUseControllerInterface := userController.NewUserController(usersUseCaseInterface)
 
 	initRoutes := routes.RouteControllerList{
 		UsersController: *usersUseControllerInterface,
+		JWTConfig:       configJWT.Init(),
 	}
 
 	initRoutes.RoutesUser(e)
-	fmt.Println(e.Start(":8000"))
+	fmt.Println(e.Start(viper.GetString(`server.address`)))
 }

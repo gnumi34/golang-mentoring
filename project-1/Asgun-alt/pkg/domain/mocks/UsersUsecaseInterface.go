@@ -5,7 +5,7 @@ package mocks
 import (
 	context "context"
 
-	uservice "github.com/gnumi34/golang-mentoring/tree/main/project-1/Asgun-alt/pkg/service/uservice"
+	uservice "github.com/gnumi34/golang-mentoring/tree/main/project-1/Asgun-alt/pkg/user/service/users"
 	mock "github.com/stretchr/testify/mock"
 )
 

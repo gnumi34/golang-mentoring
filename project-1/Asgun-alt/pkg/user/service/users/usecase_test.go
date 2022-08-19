@@ -6,8 +6,10 @@ import (
 	"testing"
 	"time"
 
+	"github.com/gnumi34/golang-mentoring/tree/main/project-1/Asgun-alt/app/middlewares"
 	_mockUserRepository "github.com/gnumi34/golang-mentoring/tree/main/project-1/Asgun-alt/pkg/user/mocks/service/users"
 	"github.com/gnumi34/golang-mentoring/tree/main/project-1/Asgun-alt/pkg/user/service/users"
+	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -16,19 +18,60 @@ var (
 	userService    users.UsersUsecaseInterface
 	userDomain     users.UsersDomain
 	usersDomain    []users.UsersDomain
+	configJWT      middlewares.ConfigJWT
 )
 
 func setup() {
-	userService = users.NewUserUseCase(&userRepository)
+	configJWT = middlewares.ConfigJWT{
+		SecretKey:       viper.GetString(`jwt.secret_key`),
+		ExpiresDuration: viper.GetInt(`jwt.expire_duration`),
+	}
+	userService = users.NewUserUseCase(&userRepository, &configJWT)
 	userDomain = users.UsersDomain{
 		ID:         "1a",
 		Username:   "test-username",
 		Email:      "test-email@gmail.com",
 		Password:   "Test-password1",
+		Token:      "test-JWT-token",
 		Created_At: time.Now(),
 		Updated_At: time.Now(),
 	}
 	usersDomain = append(usersDomain, userDomain)
+}
+
+func Test_Login(t *testing.T) {
+	setup()
+	t.Run("test case 1 | valid login", func(t *testing.T) {
+		ctx := context.Background()
+		req := users.UsersDomain{
+			Username: "test-username",
+			Password: "Test-Password1",
+		}
+
+		userRepository.On("Login", ctx, req).Return(userDomain, nil).Once()
+		user, err := userService.Login(context.Background(), users.UsersDomain{
+			Username: "test-username",
+			Password: "Test-Password1",
+		})
+		assert.Nil(t, err)
+		assert.Equal(t, "test-username", user.Username)
+	})
+
+	t.Run("test case 2 | username is empty", func(t *testing.T) {
+		ctx := context.Background()
+		req := users.UsersDomain{
+			Username: "",
+			Password: "Test-Password1",
+		}
+
+		userRepository.On("Login", ctx, req).Return(userDomain, nil).Once()
+		_, err := userService.Login(context.Background(), users.UsersDomain{
+			Username: "",
+			Password: "Test-Password1",
+		})
+
+		assert.NotNil(t, err)
+	})
 }
 
 func Test_GetUser(t *testing.T) {

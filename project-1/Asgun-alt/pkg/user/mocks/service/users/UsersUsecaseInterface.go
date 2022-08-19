@@ -70,6 +70,27 @@ func (_m *UsersUsecaseInterface) GetUser(ctx context.Context, userDomain users.U
 	return r0, r1
 }
 
+// Login provides a mock function with given fields: ctx, userDomain
+func (_m *UsersUsecaseInterface) Login(ctx context.Context, userDomain users.UsersDomain) (users.UsersDomain, error) {
+	ret := _m.Called(ctx, userDomain)
+
+	var r0 users.UsersDomain
+	if rf, ok := ret.Get(0).(func(context.Context, users.UsersDomain) users.UsersDomain); ok {
+		r0 = rf(ctx, userDomain)
+	} else {
+		r0 = ret.Get(0).(users.UsersDomain)
+	}
+
+	var r1 error
+	if rf, ok := ret.Get(1).(func(context.Context, users.UsersDomain) error); ok {
+		r1 = rf(ctx, userDomain)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
 // UpdateUser provides a mock function with given fields: ctx, userUpdateDomain
 func (_m *UsersUsecaseInterface) UpdateUser(ctx context.Context, userUpdateDomain users.UsersDomain) (users.UsersDomain, error) {
 	ret := _m.Called(ctx, userUpdateDomain)
