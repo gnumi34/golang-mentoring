@@ -1,4 +1,4 @@
-# Step 2 - Build Book Quantity Tracker
+# Step 3 - Build Book Quantity Tracker
 
 ## Studi Kasus
 
