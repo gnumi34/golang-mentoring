@@ -36,15 +36,6 @@ type GetUsersResponse struct {
 	Updated_At time.Time `json:"updated_at"`
 }
 
-type LoginUserResponse struct {
-	ID         string    `json:"id"`
-	Username   string    `json:"username"`
-	Email      string    `json:"email"`
-	Token      string    `json:"token"`
-	Created_At time.Time `json:"created_at"`
-	Updated_At time.Time `json:"updated_at"`
-}
-
 func FromLoginUserDomain(userDomain users.UsersDomain) User {
 	return User{
 		ID:         userDomain.ID,
@@ -66,13 +57,3 @@ func FromUserDomain(userDomain users.UsersDomain) User {
 		Deleted_At: userDomain.Deleted_At,
 	}
 }
-
-// func FromGetUserDomain(userDomain users.UsersDomain) GetUsersResponse {
-// 	return GetUsersResponse{
-// 		ID:         userDomain.ID,
-// 		Username:   userDomain.Username,
-// 		Email:      userDomain.Email,
-// 		Created_At: userDomain.Created_At,
-// 		Updated_At: userDomain.Updated_At,
-// 	}
-// }
