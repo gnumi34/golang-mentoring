@@ -23,8 +23,8 @@ var (
 
 func setup() {
 	configJWT = middlewares.ConfigJWT{
-		SecretKey:       viper.GetString(`jwt.secret_key`),
-		ExpiresDuration: viper.GetInt(`jwt.expire_duration`),
+		SecretKey:      viper.GetString(`jwt.secret_key`),
+		ExpireDuration: viper.GetInt(`jwt.expire_duration`),
 	}
 	userService = users.NewUserUseCase(&userRepository, &configJWT)
 	userDomain = users.UsersDomain{

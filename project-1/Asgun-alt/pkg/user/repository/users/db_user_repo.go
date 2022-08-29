@@ -3,7 +3,7 @@ package dbusers
 import (
 	"context"
 
-	"github.com/gnumi34/golang-mentoring/tree/main/project-1/Asgun-alt/pkg/domain/response"
+	"github.com/gnumi34/golang-mentoring/tree/main/project-1/Asgun-alt/pkg/domain/user/response"
 	"github.com/gnumi34/golang-mentoring/tree/main/project-1/Asgun-alt/pkg/helper/encrypt"
 	"github.com/gnumi34/golang-mentoring/tree/main/project-1/Asgun-alt/pkg/helper/errcode"
 	"github.com/gnumi34/golang-mentoring/tree/main/project-1/Asgun-alt/pkg/user/service/users"
@@ -24,11 +24,6 @@ func (repo *DBUserRepository) Login(ctx context.Context, userDomain users.UsersD
 	result := repo.db.First(&user, "username = ?", user.Username)
 	if result.Error != nil {
 		return users.UsersDomain{}, errcode.ErrRecordNotFound
-	}
-
-	match := encrypt.CheckPassword(userDomain.Password, user.Password)
-	if !match {
-		return users.UsersDomain{}, errcode.ErrWrongPassword
 	}
 	return users.UsersDomain(user), nil
 }

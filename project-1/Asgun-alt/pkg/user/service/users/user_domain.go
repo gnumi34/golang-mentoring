@@ -18,6 +18,17 @@ type UsersDomain struct {
 	Deleted_At gorm.DeletedAt
 }
 
+type UsersLoginDomain struct {
+	ID         string
+	Username   string
+	Email      string
+	Password   string
+	Token      string
+	Created_At time.Time
+	Updated_At time.Time
+	Deleted_At gorm.DeletedAt
+}
+
 type UsersUsecaseInterface interface {
 	Login(ctx context.Context, userDomain UsersDomain) (UsersDomain, error)
 	GetUser(ctx context.Context, userDomain UsersDomain) (UsersDomain, error)

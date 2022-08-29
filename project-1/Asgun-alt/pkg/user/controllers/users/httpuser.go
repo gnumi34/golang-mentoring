@@ -4,9 +4,8 @@ import (
 	"errors"
 	"net/http"
 
-	"github.com/gnumi34/golang-mentoring/tree/main/project-1/Asgun-alt/app/middlewares"
 	"github.com/gnumi34/golang-mentoring/tree/main/project-1/Asgun-alt/pkg/common/controller"
-	"github.com/gnumi34/golang-mentoring/tree/main/project-1/Asgun-alt/pkg/domain/request"
+	"github.com/gnumi34/golang-mentoring/tree/main/project-1/Asgun-alt/pkg/domain/user/request"
 	"github.com/gnumi34/golang-mentoring/tree/main/project-1/Asgun-alt/pkg/helper/errcode"
 	"github.com/gnumi34/golang-mentoring/tree/main/project-1/Asgun-alt/pkg/helper/validate"
 	"github.com/gnumi34/golang-mentoring/tree/main/project-1/Asgun-alt/pkg/user/service/users"
@@ -42,29 +41,36 @@ func (uc *UserController) Login(c echo.Context) error {
 		return uc.handler.ErrorResponse(c, badRequest, errors.New("bind data error"))
 	}
 
+	if req.Username == "" {
+		return errcode.ErrUsernameEmpty
+	}
+	if req.Password == "" {
+		return errcode.ErrPasswordEmpty
+	}
+
 	ctx := c.Request().Context()
 	user, err := uc.usecase.Login(ctx, req.ToLoginDomain())
 	if err != nil {
 		errCode, errMessage := errcode.ErrorUnauthorizedCheck(err)
 		return uc.handler.ErrorResponse(c, errCode, errMessage)
 	}
-
 	return uc.handler.SuccessDataResponse(c, map[string]string{"token": user.Token})
 }
 
 // Protected route godoc
 // @Summary      Protected user route
 // @Description  Protected route can only be accessed if the the user has valid JWT token.
-// @Param 		 Authorization header string true "Insert your access token" default(Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJVc2VySUQiOiJkMTk3YzY1Ny0zMDY1LTQ0MjYtYmY4ZS05YmJhYWYwYjY5MDciLCJleHAiOjE2NjA4NzQ3MjR9.FV-RV_55zOMO4qD1vjmY0m1ZmeRsvDfMchlbqXjcpkc)
+// @Param 		 Authorization header string true "Insert your access token"
 // @Tags         Protected
 // @Success      200
 // @Router       /user/protected [get]
 func (uc *UserController) Protected(c echo.Context) error {
-	token, err := middlewares.ValidateAuthorization(c)
-	if token == nil || err != nil {
-		status, err := errcode.ErrorUnauthorizedCheck(err)
-		return uc.handler.ErrorResponse(c, status, err)
-	}
+	// token, err := middlewares.ValidateAuthorization(c)
+	// if token == nil || err != nil {
+	// 	status, err := errcode.ErrorUnauthorizedCheck(err)
+	// 	return uc.handler.ErrorResponse(c, status, err)
+	// }
+	// fmt.Println(token)
 
 	return uc.handler.SuccessMessageResponse(c, "hello this route is protected")
 }

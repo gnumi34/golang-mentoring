@@ -2,12 +2,12 @@ package main
 
 import (
 	"fmt"
-	"log"
 	"net/http"
 	"os"
 
 	"github.com/gnumi34/golang-mentoring/tree/main/project-1/Asgun-alt/app/middlewares"
 	"github.com/gnumi34/golang-mentoring/tree/main/project-1/Asgun-alt/app/routes"
+	"github.com/gnumi34/golang-mentoring/tree/main/project-1/Asgun-alt/cmd/config"
 	"github.com/gnumi34/golang-mentoring/tree/main/project-1/Asgun-alt/pkg/helper"
 	userController "github.com/gnumi34/golang-mentoring/tree/main/project-1/Asgun-alt/pkg/user/controllers/users"
 	userRepo "github.com/gnumi34/golang-mentoring/tree/main/project-1/Asgun-alt/pkg/user/repository/users"
@@ -32,13 +32,6 @@ import (
 // @BasePath /
 // @Schemes http
 
-func init() {
-	viper.SetConfigFile(`config.json`)
-	if err := viper.ReadInConfig(); err != nil {
-		log.Println(err)
-	}
-}
-
 func main() {
 	DBconfig := &helper.Config{
 		Host:     os.Getenv("DB_HOST"),
@@ -52,10 +45,15 @@ func main() {
 
 	e := echo.New()
 
+	err := config.InitConfig()
+	if err != nil {
+		panic(fmt.Errorf("fatal error config file: %w", err))
+	}
+
 	// Configure middleware with the custom claims type
 	configJWT := middlewares.ConfigJWT{
-		SecretKey:       viper.GetString(`jwt.secretkey`),
-		ExpiresDuration: viper.GetInt(`jwt.expired`),
+		SecretKey:      viper.GetString(`jwt.secretkey`),
+		ExpireDuration: viper.GetInt(`jwt.expired`),
 	}
 
 	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{

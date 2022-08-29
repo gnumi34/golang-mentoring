@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/gnumi34/golang-mentoring/tree/main/project-1/Asgun-alt/app/middlewares"
+	"github.com/gnumi34/golang-mentoring/tree/main/project-1/Asgun-alt/pkg/helper/encrypt"
 	"github.com/gnumi34/golang-mentoring/tree/main/project-1/Asgun-alt/pkg/helper/errcode"
 	uuid "github.com/satori/go.uuid"
 )
@@ -21,19 +22,17 @@ func NewUserUseCase(userRepo UsersRepositoryInterface, configJWT *middlewares.Co
 }
 
 func (usecase *UserUseCase) Login(ctx context.Context, userDomain UsersDomain) (UsersDomain, error) {
-	if userDomain.Username == "" {
-		return UsersDomain{}, errcode.ErrUsernameEmpty
-	}
-	if userDomain.Password == "" {
-		return UsersDomain{}, errcode.ErrPasswordEmpty
-	}
-
 	user, err := usecase.repo.Login(ctx, userDomain)
 	if err != nil {
 		return UsersDomain{}, err
 	}
 
-	user.Token, err = usecase.ConfigJWT.GenerateToken(user.ID)
+	match := encrypt.CheckPassword(userDomain.Password, user.Password)
+	if !match {
+		return UsersDomain{}, errcode.ErrWrongPassword
+	}
+
+	user.Token, err = usecase.ConfigJWT.GenerateToken(user.Username)
 	if err != nil {
 		return UsersDomain{}, err
 	}

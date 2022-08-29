@@ -25,10 +25,10 @@ func (controller RouteControllerList) RoutesUser(e *echo.Echo) {
 	e.GET("/swagger/*", echoSwagger.WrapHandler)
 	e.POST("/login", controller.UsersController.Login)
 
-	e.POST("/users/get-user", controller.UsersController.GetUser)
 	e.POST("/users", controller.UsersController.AddUser)
-	e.PUT("/users", controller.UsersController.UpdateUser)
-	e.DELETE("users/:id", controller.UsersController.DeleteUser)
+	e.POST("/users/get-user", controller.UsersController.GetUser, jwtMiddleware)
+	e.PUT("/users", controller.UsersController.UpdateUser, jwtMiddleware)
+	e.DELETE("users/:id", controller.UsersController.DeleteUser, jwtMiddleware)
 
 	e.GET("/user/protected", controller.UsersController.Protected, jwtMiddleware)
 }
