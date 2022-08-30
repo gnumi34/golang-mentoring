@@ -1,1 +1,0 @@
-SELECT * FROM "users" WHERE user_id = '7d02c63e-b3b9-4b47-a002-94852f704d25' AND "users"."deleted_at" IS NULL ORDER BY "users"."user_id" LIMIT 1
