@@ -5,8 +5,13 @@ import (
 	"fmt"
 	"net/http"
 
+<<<<<<< HEAD
 	"github.com/albertafriadii/tree/featured/albert-jwt-auth/pkg/config"
 	"github.com/albertafriadii/tree/featured/albert-jwt-auth/pkg/domain"
+=======
+	"github.com/albertafriadii/tree/fix/albertafriadii/pkg/config"
+	"github.com/albertafriadii/tree/fix/albertafriadii/pkg/domain"
+>>>>>>> 289c4e129d7f4946ed954ea9078f420bf430068c
 	"github.com/labstack/echo/v4"
 )
 
@@ -35,6 +40,7 @@ func (c *UserController) GetUser(ctx echo.Context) error {
 		return domain.ErrResponse(ctx, http.StatusBadRequest, errors.New("data bind error"))
 	}
 
+<<<<<<< HEAD
 	if u.Username == "" {
 		return domain.ErrResponse(ctx, http.StatusBadRequest, config.ErrUsernameEmpty)
 	}
@@ -43,6 +49,8 @@ func (c *UserController) GetUser(ctx echo.Context) error {
 		return domain.ErrResponse(ctx, http.StatusBadRequest, config.ErrPasswordEmpty)
 	}
 
+=======
+>>>>>>> 289c4e129d7f4946ed954ea9078f420bf430068c
 	_, err := c.usecase.GetUser(ctx.Request().Context(), u.ToGetUserDomain())
 	if err != nil {
 		errStatus, errMessage := config.ErrGetUserCheck(err)
@@ -69,6 +77,7 @@ func (c *UserController) LoginUser(ctx echo.Context) error {
 		return domain.ErrResponse(ctx, http.StatusBadRequest, errors.New("data bind error"))
 	}
 
+<<<<<<< HEAD
 	if u.Username == "" {
 		return domain.ErrResponse(ctx, http.StatusBadRequest, config.ErrUsernameEmpty)
 	}
@@ -77,6 +86,8 @@ func (c *UserController) LoginUser(ctx echo.Context) error {
 		return domain.ErrResponse(ctx, http.StatusBadRequest, config.ErrPasswordEmpty)
 	}
 
+=======
+>>>>>>> 289c4e129d7f4946ed954ea9078f420bf430068c
 	res, err := c.usecase.LoginUser(ctx.Request().Context(), u.ToGetUserDomain())
 	if err != nil {
 		errStatus, errMessage := config.ErrGetUserCheck(err)
@@ -113,6 +124,7 @@ func (c *UserController) CreateUser(ctx echo.Context) error {
 		return domain.ErrResponse(ctx, http.StatusBadRequest, errors.New("Password must have at least 8 letters, alphanumeric + symbol, has at least 1 uppercase letter, has at least 1 number, and has at least 1 symbol."))
 	}
 
+<<<<<<< HEAD
 	if !config.ValidationPassword(u.Repassword) {
 		return domain.ErrResponse(ctx, http.StatusBadRequest, errors.New("Password must have at least 8 letters, alphanumeric + symbol, has at least 1 uppercase letter, has at least 1 number, and has at least 1 symbol."))
 	}
@@ -121,6 +133,8 @@ func (c *UserController) CreateUser(ctx echo.Context) error {
 		return domain.ErrResponse(ctx, http.StatusBadRequest, errors.New("Password not match"))
 	}
 
+=======
+>>>>>>> 289c4e129d7f4946ed954ea9078f420bf430068c
 	_, err := c.usecase.CreateUser(ctx.Request().Context(), u.ToCreateUserDomain())
 	if err != nil {
 		errStatus, errMessage := config.ErrCreateUserCheck(err)
@@ -147,6 +161,7 @@ func (c *UserController) UpdateUser(ctx echo.Context) error {
 		return domain.ErrResponse(ctx, http.StatusBadRequest, errors.New("data bind error"))
 	}
 
+<<<<<<< HEAD
 	validationErr := config.Validator(u)
 	if validationErr != nil {
 		return domain.ErrValidResponse(ctx, http.StatusBadRequest, validationErr)
@@ -156,6 +171,8 @@ func (c *UserController) UpdateUser(ctx echo.Context) error {
 		return domain.ErrResponse(ctx, http.StatusBadRequest, config.ErrUsernameEmpty)
 	}
 
+=======
+>>>>>>> 289c4e129d7f4946ed954ea9078f420bf430068c
 	if !config.ValidationPassword(u.Password) && u.Password != "" {
 		return domain.ErrResponse(ctx, http.StatusBadRequest, errors.New("Password must have at least 8 letters, alphanumeric + symbol, has at least 1 uppercase letter, has at least 1 number, and has at least 1 symbol."))
 	}
