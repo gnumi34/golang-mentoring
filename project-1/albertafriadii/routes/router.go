@@ -3,15 +3,9 @@ package routes
 import (
 	"net/http"
 
-<<<<<<< HEAD
 	_ "github.com/albertafriadii/tree/featured/albert-jwt-auth/docs"
 	"github.com/albertafriadii/tree/featured/albert-jwt-auth/pkg/config"
 	controller "github.com/albertafriadii/tree/featured/albert-jwt-auth/pkg/users/delivery/http"
-=======
-	_ "github.com/albertafriadii/tree/fix/albertafriadii/docs"
-	"github.com/albertafriadii/tree/fix/albertafriadii/pkg/config"
-	controller "github.com/albertafriadii/tree/fix/albertafriadii/pkg/users/delivery/http"
->>>>>>> 289c4e129d7f4946ed954ea9078f420bf430068c
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 

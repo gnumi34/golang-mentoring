@@ -8,10 +8,7 @@ import (
 )
 
 type InputCreateUser struct {
-<<<<<<< HEAD
 	UserId     string `json:"user_id"`
-=======
->>>>>>> 289c4e129d7f4946ed954ea9078f420bf430068c
 	Username   string `json:"username" validate:"required"`
 	Email      string `json:"email" validate:"required,email"`
 	Password   string `json:"password_1" validate:"required,min=8"`
@@ -20,11 +17,7 @@ type InputCreateUser struct {
 type InputUpdateUser struct {
 	UserId     string `json:"user_id"`
 	Username   string `json:"username" validate:"required"`
-<<<<<<< HEAD
 	Email      string `json:"email"`
-=======
-	Email      string `json:"email" validate:"required,email"`
->>>>>>> 289c4e129d7f4946ed954ea9078f420bf430068c
 	Password   string `json:"password_1"`
 	Repassword string `json:"password_2"`
 }
@@ -48,26 +41,16 @@ type UserUsecaseInterface interface {
 	GetUser(ctx context.Context, u Users) (Users, error)
 	LoginUser(ctx context.Context, u Users) (string, error)
 	CreateUser(ctx context.Context, u Users) (Users, error)
-<<<<<<< HEAD
 	UpdateUser(ctx context.Context, u Users, UserID string) (Users, error)
 	DeleteUser(ctx context.Context, UserID string) error
-=======
-	UpdateUser(ctx context.Context, u Users, user_id string) (Users, error)
-	DeleteUser(ctx context.Context, user_id string) error
->>>>>>> 289c4e129d7f4946ed954ea9078f420bf430068c
 }
 
 type UserRepositoryInterface interface {
 	GetUser(ctx context.Context, u Users) (Users, error)
 	LoginUser(ctx context.Context, u Users) (bool, error)
 	CreateUser(ctx context.Context, u Users) (Users, error)
-<<<<<<< HEAD
 	UpdateUser(ctx context.Context, u Users, UserID string) (Users, error)
 	DeleteUser(ctx context.Context, UserID string) error
-=======
-	UpdateUser(ctx context.Context, u Users, user_id string) (Users, error)
-	DeleteUser(ctx context.Context, user_id string) error
->>>>>>> 289c4e129d7f4946ed954ea9078f420bf430068c
 }
 
 func FromUserDomain(u Users) Users {
