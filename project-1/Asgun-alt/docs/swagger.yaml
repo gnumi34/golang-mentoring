@@ -1,5 +1,12 @@
 basePath: /
 definitions:
+  auth.LoginUserRequest:
+    properties:
+      password:
+        type: string
+      username:
+        type: string
+    type: object
   gorm.DeletedAt:
     properties:
       time:
@@ -38,6 +45,8 @@ definitions:
       email:
         type: string
       id:
+        type: integer
+      old_password:
         type: string
       password_1:
         type: string
@@ -48,17 +57,17 @@ definitions:
     type: object
   users.UsersDomain:
     properties:
-      created_At:
+      createdAt:
         type: string
-      deleted_At:
+      deletedAt:
         $ref: '#/definitions/gorm.DeletedAt'
       email:
         type: string
       id:
-        type: string
+        type: integer
       password:
         type: string
-      updated_At:
+      updatedAt:
         type: string
       username:
         type: string
@@ -74,6 +83,42 @@ info:
   title: Go Echo Library Management
   version: "1.0"
 paths:
+  /api/auth/login:
+    post:
+      consumes:
+      - application/json
+      description: If user is exists in the database, Generate and RETURN user token.
+      parameters:
+      - description: Login
+        in: body
+        name: User
+        required: true
+        schema:
+          $ref: '#/definitions/auth.LoginUserRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      summary: Login
+      tags:
+      - Login
+  /user/protected:
+    get:
+      description: Protected route can only be accessed if the the user has valid
+        JWT token.
+      parameters:
+      - description: Insert your access token 'Bearer your_token'
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
+      summary: Protected user route
+      tags:
+      - Protected
   /users/:
     post:
       consumes:
@@ -96,12 +141,17 @@ paths:
             $ref: '#/definitions/users.UsersDomain'
       summary: Add user
       tags:
-      - Add new user
+      - Add User
     put:
       consumes:
       - application/json
       description: Update the user to the database.
       parameters:
+      - description: Insert your access token 'Bearer your_token'
+        in: header
+        name: Authorization
+        required: true
+        type: string
       - description: Update User
         in: body
         name: User
@@ -124,6 +174,11 @@ paths:
       - application/json
       description: Soft delete user by passing the user ID.
       parameters:
+      - description: Insert your access token 'Bearer your_token'
+        in: header
+        name: Authorization
+        required: true
+        type: string
       - description: delete user
         in: path
         name: id
@@ -144,6 +199,11 @@ paths:
       description: validate username and password, if user is exists in the database
         RETURN valid user
       parameters:
+      - description: Insert your access token 'Bearer your_token'
+        in: header
+        name: Authorization
+        required: true
+        type: string
       - description: validate user
         in: body
         name: User
@@ -157,7 +217,7 @@ paths:
           description: OK
       summary: Show an account
       tags:
-      - GetUser
+      - Get User
 schemes:
 - http
 swagger: "2.0"

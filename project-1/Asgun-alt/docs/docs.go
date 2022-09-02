@@ -21,6 +21,60 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/api/auth/login": {
+            "post": {
+                "description": "If user is exists in the database, Generate and RETURN user token.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Login"
+                ],
+                "summary": "Login",
+                "parameters": [
+                    {
+                        "description": "Login",
+                        "name": "User",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/auth.LoginUserRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/user/protected": {
+            "get": {
+                "description": "Protected route can only be accessed if the the user has valid JWT token.",
+                "tags": [
+                    "Protected"
+                ],
+                "summary": "Protected user route",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Insert your access token 'Bearer your_token'",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
         "/users/": {
             "put": {
                 "description": "Update the user to the database.",
@@ -35,6 +89,13 @@ const docTemplate = `{
                 ],
                 "summary": "Update User",
                 "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Insert your access token 'Bearer your_token'",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
                     {
                         "description": "Update User",
                         "name": "User",
@@ -63,7 +124,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Add new user"
+                    "Add User"
                 ],
                 "summary": "Add user",
                 "parameters": [
@@ -97,10 +158,17 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "GetUser"
+                    "Get User"
                 ],
                 "summary": "Show an account",
                 "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Insert your access token 'Bearer your_token'",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
                     {
                         "description": "validate user",
                         "name": "User",
@@ -134,6 +202,13 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
+                        "description": "Insert your access token 'Bearer your_token'",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
                         "description": "delete user",
                         "name": "id",
                         "in": "path",
@@ -149,6 +224,17 @@ const docTemplate = `{
         }
     },
     "definitions": {
+        "auth.LoginUserRequest": {
+            "type": "object",
+            "properties": {
+                "password": {
+                    "type": "string"
+                },
+                "username": {
+                    "type": "string"
+                }
+            }
+        },
         "gorm.DeletedAt": {
             "type": "object",
             "properties": {
@@ -204,6 +290,9 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "id": {
+                    "type": "integer"
+                },
+                "old_password": {
                     "type": "string"
                 },
                 "password_1": {
@@ -220,22 +309,22 @@ const docTemplate = `{
         "users.UsersDomain": {
             "type": "object",
             "properties": {
-                "created_At": {
+                "createdAt": {
                     "type": "string"
                 },
-                "deleted_At": {
+                "deletedAt": {
                     "$ref": "#/definitions/gorm.DeletedAt"
                 },
                 "email": {
                     "type": "string"
                 },
                 "id": {
-                    "type": "string"
+                    "type": "integer"
                 },
                 "password": {
                     "type": "string"
                 },
-                "updated_At": {
+                "updatedAt": {
                     "type": "string"
                 },
                 "username": {

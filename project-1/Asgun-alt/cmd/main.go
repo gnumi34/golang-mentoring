@@ -4,14 +4,22 @@ import (
 	"fmt"
 	"net/http"
 	"os"
-	"github.com/gnumi34/golang-mentoring/tree/main/project-1/Asgun-alt/app/routes"
-	"github.com/gnumi34/golang-mentoring/tree/main/project-1/Asgun-alt/pkg/helper"
-	userController "github.com/gnumi34/golang-mentoring/tree/main/project-1/Asgun-alt/pkg/user/controllers/users"
-	userRepo "github.com/gnumi34/golang-mentoring/tree/main/project-1/Asgun-alt/pkg/user/repository/users"
-	userUseCase "github.com/gnumi34/golang-mentoring/tree/main/project-1/Asgun-alt/pkg/user/service/users"
+
+	"golang-mentoring/project-1/Asgun-alt/app/routes"
+	"golang-mentoring/project-1/Asgun-alt/cmd/config"
+	authHTTPHandler "golang-mentoring/project-1/Asgun-alt/pkg/auth/controller/http"
+	authRepository "golang-mentoring/project-1/Asgun-alt/pkg/auth/repository/db"
+	authUseCase "golang-mentoring/project-1/Asgun-alt/pkg/auth/service"
+	"golang-mentoring/project-1/Asgun-alt/pkg/domain/auth"
+	"golang-mentoring/project-1/Asgun-alt/pkg/helper"
+	userController "golang-mentoring/project-1/Asgun-alt/pkg/users/controllers/http"
+	userRepo "golang-mentoring/project-1/Asgun-alt/pkg/users/repository/db"
+	userUseCase "golang-mentoring/project-1/Asgun-alt/pkg/users/service/users"
+
 	_ "github.com/joho/godotenv/autoload"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
+	"github.com/spf13/viper"
 	"gorm.io/gorm"
 )
 
@@ -41,6 +49,11 @@ func main() {
 
 	e := echo.New()
 
+	err := config.InitConfig()
+	if err != nil {
+		panic(fmt.Errorf("fatal error config file: %w", err))
+	}
+
 	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
 		AllowOrigins: []string{"http://localhost:8000"},
 		AllowMethods: []string{
@@ -58,6 +71,15 @@ func main() {
 		UsersController: *usersUseControllerInterface,
 	}
 
+	api := e.Group("/api")
+	InitAuthHandler(api, db)
+
 	initRoutes.RoutesUser(e)
-	fmt.Println(e.Start(":8000"))
+	fmt.Println(e.Start(viper.GetString(`server.address`)))
+}
+
+func InitAuthHandler(appGroup *echo.Group, db *gorm.DB) {
+	var dbRepository auth.Repository = authRepository.NewDBAuthRepository(db)
+	var useCase auth.UseCase = authUseCase.NewAuthUseCase(dbRepository)
+	authHTTPHandler.NewAuthController(appGroup, useCase)
 }

@@ -17,6 +17,60 @@
     "host": "localhost:8000",
     "basePath": "/",
     "paths": {
+        "/api/auth/login": {
+            "post": {
+                "description": "If user is exists in the database, Generate and RETURN user token.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Login"
+                ],
+                "summary": "Login",
+                "parameters": [
+                    {
+                        "description": "Login",
+                        "name": "User",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/auth.LoginUserRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/user/protected": {
+            "get": {
+                "description": "Protected route can only be accessed if the the user has valid JWT token.",
+                "tags": [
+                    "Protected"
+                ],
+                "summary": "Protected user route",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Insert your access token 'Bearer your_token'",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
         "/users/": {
             "put": {
                 "description": "Update the user to the database.",
@@ -31,6 +85,13 @@
                 ],
                 "summary": "Update User",
                 "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Insert your access token 'Bearer your_token'",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
                     {
                         "description": "Update User",
                         "name": "User",
@@ -59,7 +120,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "Add new user"
+                    "Add User"
                 ],
                 "summary": "Add user",
                 "parameters": [
@@ -93,10 +154,17 @@
                     "application/json"
                 ],
                 "tags": [
-                    "GetUser"
+                    "Get User"
                 ],
                 "summary": "Show an account",
                 "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Insert your access token 'Bearer your_token'",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
                     {
                         "description": "validate user",
                         "name": "User",
@@ -130,6 +198,13 @@
                 "parameters": [
                     {
                         "type": "string",
+                        "description": "Insert your access token 'Bearer your_token'",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
                         "description": "delete user",
                         "name": "id",
                         "in": "path",
@@ -145,6 +220,17 @@
         }
     },
     "definitions": {
+        "auth.LoginUserRequest": {
+            "type": "object",
+            "properties": {
+                "password": {
+                    "type": "string"
+                },
+                "username": {
+                    "type": "string"
+                }
+            }
+        },
         "gorm.DeletedAt": {
             "type": "object",
             "properties": {
@@ -200,6 +286,9 @@
                     "type": "string"
                 },
                 "id": {
+                    "type": "integer"
+                },
+                "old_password": {
                     "type": "string"
                 },
                 "password_1": {
@@ -216,22 +305,22 @@
         "users.UsersDomain": {
             "type": "object",
             "properties": {
-                "created_At": {
+                "createdAt": {
                     "type": "string"
                 },
-                "deleted_At": {
+                "deletedAt": {
                     "$ref": "#/definitions/gorm.DeletedAt"
                 },
                 "email": {
                     "type": "string"
                 },
                 "id": {
-                    "type": "string"
+                    "type": "integer"
                 },
                 "password": {
                     "type": "string"
                 },
-                "updated_At": {
+                "updatedAt": {
                     "type": "string"
                 },
                 "username": {
