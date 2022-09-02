@@ -5,8 +5,9 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/albertafriadii/tree/featured/albert-jwt-auth/pkg/config"
-	"github.com/albertafriadii/tree/featured/albert-jwt-auth/pkg/domain"
+	"golang-mentoring/project-1/albertafriadii/pkg/config"
+	"golang-mentoring/project-1/albertafriadii/pkg/domain"
+
 	"github.com/labstack/echo/v4"
 )
 
@@ -16,40 +17,6 @@ type UserController struct {
 
 func NewUserController(u domain.UserUsecaseInterface) *UserController {
 	return &UserController{usecase: u}
-}
-
-// GetUser godoc
-// @Summary      Show an account
-// @Description  validate username and password, if user is exists in the database RETURN valid user
-// @Tags         GetUser
-// @Param		 User body domain.GetUser true "validate user"
-// @Accept       json
-// @Produce      json
-// @Success      200
-// @Failure		 400
-// @Router       /user/get [get]
-func (c *UserController) GetUser(ctx echo.Context) error {
-	u := domain.GetUser{}
-	bindErr := ctx.Bind(&u)
-	if bindErr != nil {
-		return domain.ErrResponse(ctx, http.StatusBadRequest, errors.New("data bind error"))
-	}
-
-	if u.Username == "" {
-		return domain.ErrResponse(ctx, http.StatusBadRequest, config.ErrUsernameEmpty)
-	}
-
-	if u.Password == "" {
-		return domain.ErrResponse(ctx, http.StatusBadRequest, config.ErrPasswordEmpty)
-	}
-
-	_, err := c.usecase.GetUser(ctx.Request().Context(), u.ToGetUserDomain())
-	if err != nil {
-		errStatus, errMessage := config.ErrGetUserCheck(err)
-		fmt.Println(err)
-		return domain.ErrResponse(ctx, errStatus, errMessage)
-	}
-	return domain.SuccessMessageResponse(ctx, "Valid User")
 }
 
 // LoginUser godoc
@@ -77,7 +44,7 @@ func (c *UserController) LoginUser(ctx echo.Context) error {
 		return domain.ErrResponse(ctx, http.StatusBadRequest, config.ErrPasswordEmpty)
 	}
 
-	res, err := c.usecase.LoginUser(ctx.Request().Context(), u.ToGetUserDomain())
+	res, err := c.usecase.LoginUser(ctx.Request().Context(), &u)
 	if err != nil {
 		errStatus, errMessage := config.ErrGetUserCheck(err)
 		fmt.Println(err)
@@ -118,7 +85,7 @@ func (c *UserController) CreateUser(ctx echo.Context) error {
 	}
 
 	if u.Password != u.Repassword {
-		return domain.ErrResponse(ctx, http.StatusBadRequest, errors.New("Password not match"))
+		return domain.ErrResponse(ctx, http.StatusBadRequest, config.ErrPasswordNotMatch)
 	}
 
 	_, err := c.usecase.CreateUser(ctx.Request().Context(), u.ToCreateUserDomain())
@@ -143,6 +110,7 @@ func (c *UserController) CreateUser(ctx echo.Context) error {
 func (c *UserController) UpdateUser(ctx echo.Context) error {
 	u := domain.InputUpdateUser{}
 	bindErr := ctx.Bind(&u)
+	UserID := ctx.Param("user_id")
 	if bindErr != nil {
 		return domain.ErrResponse(ctx, http.StatusBadRequest, errors.New("data bind error"))
 	}
@@ -156,13 +124,23 @@ func (c *UserController) UpdateUser(ctx echo.Context) error {
 		return domain.ErrResponse(ctx, http.StatusBadRequest, config.ErrUsernameEmpty)
 	}
 
-	if !config.ValidationPassword(u.Password) && u.Password != "" {
-		return domain.ErrResponse(ctx, http.StatusBadRequest, errors.New("Password must have at least 8 letters, alphanumeric + symbol, has at least 1 uppercase letter, has at least 1 number, and has at least 1 symbol."))
+	if u.ExistingPassword != "" {
+		if u.Password == "" {
+			return domain.ErrResponse(ctx, http.StatusBadRequest, config.ErrPasswordEmpty)
+		}
+
+		if u.Password != u.Repassword {
+			return domain.ErrResponse(ctx, http.StatusBadRequest, config.ErrPasswordNotMatch)
+		}
+
+		if !config.ValidationPassword(u.Password) && u.Password != "" {
+			return domain.ErrResponse(ctx, http.StatusBadRequest, errors.New("Password must have at least 8 letters, alphanumeric + symbol, has at least 1 uppercase letter, has at least 1 number, and has at least 1 symbol."))
+		}
+	} else {
+		u.Password, u.Repassword = "", ""
 	}
 
-	userID := ctx.Param("user_id")
-
-	_, err := c.usecase.UpdateUser(ctx.Request().Context(), u.ToUpdateUserDomain(), userID)
+	err := c.usecase.UpdateUser(ctx.Request().Context(), u.ExistingPassword, u.ToUpdateUserDomain(), UserID)
 	if err != nil {
 		errStatus, errMessage := config.ErrUpdateUserCheck(err)
 		return domain.ErrResponse(ctx, errStatus, errMessage)

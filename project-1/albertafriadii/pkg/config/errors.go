@@ -12,6 +12,7 @@ var (
 	ErrUsernameEmpty       = errors.New("Required Username")
 	ErrEmailEmpty          = errors.New("Required Email")
 	ErrPasswordEmpty       = errors.New("Required Password")
+	ErrPasswordNotMatch    = errors.New("Password not match")
 )
 
 func ErrGetUserCheck(err error) (int, error) {
@@ -21,6 +22,8 @@ func ErrGetUserCheck(err error) (int, error) {
 		return http.StatusBadRequest, ErrUsernameEmpty
 	} else if errors.Is(err, ErrPasswordEmpty) {
 		return http.StatusBadRequest, ErrPasswordEmpty
+	} else if errors.Is(err, ErrPasswordNotMatch) {
+		return http.StatusBadRequest, ErrPasswordNotMatch
 	}
 	return http.StatusInternalServerError, ErrInternalServerError
 }

@@ -3,9 +3,11 @@ package routes
 import (
 	"net/http"
 
-	_ "github.com/albertafriadii/tree/featured/albert-jwt-auth/docs"
-	"github.com/albertafriadii/tree/featured/albert-jwt-auth/pkg/config"
-	controller "github.com/albertafriadii/tree/featured/albert-jwt-auth/pkg/users/delivery/http"
+	_ "golang-mentoring/project-1/albertafriadii/docs"
+
+	"golang-mentoring/project-1/albertafriadii/pkg/config"
+	controller "golang-mentoring/project-1/albertafriadii/pkg/users/delivery/http"
+
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 
@@ -31,12 +33,14 @@ type RouteList struct {
 
 func (r RouteList) RouteUsers(e *echo.Echo) {
 
+	jwtConfig := config.NewJWTMiddlewareConfig()
+
 	e.GET("/", func(c echo.Context) error {
 		return c.JSON(http.StatusOK, echo.Map{"message": "Hello World!"})
 	})
 	e.GET("/protected/hello", func(c echo.Context) error {
 		return c.JSON(http.StatusOK, echo.Map{"message": "This is Protected Page"})
-	}, config.IsAuthenticated)
+	}, middleware.JWTWithConfig(jwtConfig))
 
 	g := e.Group("/user")
 	g.Use(middleware.LoggerWithConfig(middleware.LoggerConfig{
@@ -44,9 +48,8 @@ func (r RouteList) RouteUsers(e *echo.Echo) {
 	}))
 
 	e.GET("/swagger/*", echoSwagger.WrapHandler)
-	g.GET("/get", r.UsersController.GetUser)
 	g.POST("/login", r.UsersController.LoginUser)
 	g.POST("/create", r.UsersController.CreateUser)
-	g.PUT("/update/:user_id", r.UsersController.UpdateUser, config.IsAuthenticated)
-	g.DELETE("/delete/:user_id", r.UsersController.DeleteUser, config.IsAuthenticated)
+	g.PUT("/update/:user_id", r.UsersController.UpdateUser, middleware.JWTWithConfig(jwtConfig))
+	g.DELETE("/delete/:user_id", r.UsersController.DeleteUser, middleware.JWTWithConfig(jwtConfig))
 }

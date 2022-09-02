@@ -5,11 +5,12 @@ import (
 	"log"
 	"os"
 
-	"github.com/albertafriadii/tree/featured/albert-jwt-auth/pkg/config"
-	"github.com/albertafriadii/tree/featured/albert-jwt-auth/pkg/users/delivery/http"
-	"github.com/albertafriadii/tree/featured/albert-jwt-auth/pkg/users/repository"
-	"github.com/albertafriadii/tree/featured/albert-jwt-auth/pkg/users/usecase"
-	"github.com/albertafriadii/tree/featured/albert-jwt-auth/routes"
+	"golang-mentoring/project-1/albertafriadii/pkg/config"
+	"golang-mentoring/project-1/albertafriadii/pkg/users/delivery/http"
+	"golang-mentoring/project-1/albertafriadii/pkg/users/repository"
+	"golang-mentoring/project-1/albertafriadii/pkg/users/usecase"
+	"golang-mentoring/project-1/albertafriadii/routes"
+
 	"github.com/joho/godotenv"
 	"github.com/labstack/echo/v4"
 	"gorm.io/gorm"

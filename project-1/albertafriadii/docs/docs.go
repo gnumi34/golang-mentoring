@@ -10,12 +10,7 @@ const docTemplate = `{
     "info": {
         "description": "{{escape .Description}}",
         "title": "{{.Title}}",
-        "termsOfService": "http://swagger.io/terms/",
-        "contact": {
-            "name": "API Support",
-            "url": "http://www.swagger.io/support",
-            "email": "support@swagger.io"
-        },
+        "contact": {},
         "version": "{{.Version}}"
     },
     "host": "{{.Host}}",
@@ -58,9 +53,9 @@ const docTemplate = `{
                 }
             }
         },
-        "/user/get": {
+        "/user/login": {
             "get": {
-                "description": "validate username and password, if user is exists in the database RETURN valid user",
+                "description": "validate username and password with JWT Token to authentication user.",
                 "consumes": [
                     "application/json"
                 ],
@@ -68,7 +63,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "GetUser"
+                    "LoginUser"
                 ],
                 "summary": "Show an account",
                 "parameters": [
@@ -195,6 +190,9 @@ const docTemplate = `{
                     "type": "string",
                     "minLength": 8
                 },
+                "user_id": {
+                    "type": "string"
+                },
                 "username": {
                     "type": "string"
                 }
@@ -203,11 +201,13 @@ const docTemplate = `{
         "domain.InputUpdateUser": {
             "type": "object",
             "required": [
-                "email",
                 "username"
             ],
             "properties": {
                 "email": {
+                    "type": "string"
+                },
+                "existing_password": {
                     "type": "string"
                 },
                 "password_1": {
@@ -273,12 +273,12 @@ const docTemplate = `{
 
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = &swag.Spec{
-	Version:          "1.0",
-	Host:             "localhost:1323",
-	BasePath:         "/",
-	Schemes:          []string{"http"},
-	Title:            "Go Echo Library Management",
-	Description:      "a simple Go library management with echo framework",
+	Version:          "",
+	Host:             "",
+	BasePath:         "",
+	Schemes:          []string{},
+	Title:            "",
+	Description:      "",
 	InfoInstanceName: "swagger",
 	SwaggerTemplate:  docTemplate,
 }

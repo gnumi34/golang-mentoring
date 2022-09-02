@@ -4,8 +4,9 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/albertafriadii/tree/featured/albert-jwt-auth/pkg/config"
-	"github.com/albertafriadii/tree/featured/albert-jwt-auth/pkg/domain"
+	"golang-mentoring/project-1/albertafriadii/pkg/config"
+	"golang-mentoring/project-1/albertafriadii/pkg/domain"
+
 	"gorm.io/gorm"
 )
 
@@ -19,77 +20,52 @@ func NewUserRepositroy(DB *gorm.DB) domain.UserRepositoryInterface {
 	}
 }
 
-func (d *DBUserRepository) GetUser(ctx context.Context, u domain.Users) (domain.Users, error) {
+func (d *DBUserRepository) GetUser(ctx context.Context, UserID string) (*domain.Users, error) {
 	var user domain.Users
 
-	result := d.db.Where("username = ?", u.Username).Find(&user)
-	if result.Error != nil {
-		fmt.Println(result.Error)
-		return domain.Users{}, result.Error
-	}
-
-	_, err := config.CheckPassword(u.Password, user.Password)
-
+	err := d.db.WithContext(ctx).First(&user, "user_id = ?", UserID).Error
 	if err != nil {
-		// fmt.Println(err)
-		return domain.Users{}, err
+		fmt.Println(err)
+		return nil, err
 	}
 
-	return domain.Users(user), nil
+	return &user, nil
 }
 
-func (d *DBUserRepository) LoginUser(ctx context.Context, u domain.Users) (bool, error) {
+func (d *DBUserRepository) LoginUser(ctx context.Context, Username string) (*domain.Users, error) {
 
 	var user domain.Users
 
-	result := d.db.Where("username = ?", u.Username).Find(&user)
-	if result.Error != nil {
-		fmt.Println(result.Error)
-		return false, result.Error
-	}
-
-	_, err := config.CheckPassword(u.Password, user.Password)
-
+	err := d.db.WithContext(ctx).First(&user, "username = ?", Username).Error
 	if err != nil {
-		// fmt.Println(err)
-		return false, err
+		fmt.Println(err)
+		return nil, err
 	}
 
-	return true, nil
+	return &user, nil
 }
 
-func (d *DBUserRepository) CreateUser(ctx context.Context, u domain.Users) (domain.Users, error) {
+func (d *DBUserRepository) CreateUser(ctx context.Context, u *domain.Users) (*domain.Users, error) {
 	user := domain.FromUserDomain(u)
 
 	result := d.db.Create(&user)
 	if result.Error != nil {
 		fmt.Println(result.Error)
-		return domain.Users{}, result.Error
+		return nil, result.Error
 	}
 
-	return domain.Users(user), nil
+	return user, nil
 }
 
-func (d *DBUserRepository) UpdateUser(ctx context.Context, u domain.Users, UserID string) (domain.Users, error) {
-	var user domain.Users
-	updateUser := domain.FromUserDomain(u)
+func (d *DBUserRepository) UpdateUser(ctx context.Context, u *domain.Users, UserID string) error {
 
-	if updateUser.Password != "" {
-		hashedPassword, err := config.HashPassword(updateUser.Password)
-		if err != nil {
-			fmt.Println(err)
-			return domain.Users{}, err
-		}
-		updateUser.Password = hashedPassword
+	err := d.db.WithContext(ctx).Where("user_id = ?", UserID).Updates(u).Error
+	if err != nil {
+		fmt.Println(err)
+		return err
 	}
 
-	result := d.db.Model(&user).Where("user_id = ?", UserID).Updates(updateUser)
-	if result.Error != nil {
-		fmt.Println(result.Error)
-		return domain.Users{}, result.Error
-	}
-
-	return domain.Users(updateUser), nil
+	return nil
 }
 
 func (d *DBUserRepository) DeleteUser(ctx context.Context, UserID string) error {
