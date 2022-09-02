@@ -1,4 +1,4 @@
-CREATE TABLE book_collection (
+CREATE TABLE public.book_collection (
     book_id SERIAL PRIMARY KEY NOT NULL,
     title VARCHAR(50) NOT NULL,
     author VARCHAR(50) NOT NULL,
@@ -11,7 +11,7 @@ CREATE TABLE book_collection (
     deleted_at TIMESTAMP
 );
 
-CREATE TABLE book_lending (
+CREATE TABLE public.book_lending (
     lend_id SERIAL PRIMARY KEY NOT NULL,
     book_id INT,
     user_id INT,
@@ -21,10 +21,10 @@ CREATE TABLE book_lending (
     returned_at TIMESTAMP,
     notes VARCHAR(100),
     FOREIGN KEY (book_id) REFERENCES book_collection(book_id),
-    FOREIGN KEY (user_id) REFERENCES users(user_id)
+    FOREIGN KEY (user_id) REFERENCES users(id)
 );
 
-CREATE TABLE book_request_approval (
+CREATE TABLE public.book_request_approval (
     approval_id SERIAL PRIMARY KEY NOT NULL,
     book_id INT,
     user_id INT,
@@ -32,5 +32,5 @@ CREATE TABLE book_request_approval (
     is_accepted BOOLEAN,
     notes VARCHAR(100),
     FOREIGN KEY (book_id) REFERENCES book_collection(book_id),
-    FOREIGN KEY (user_id) REFERENCES users(user_id)
+    FOREIGN KEY (user_id) REFERENCES users(id)
 );

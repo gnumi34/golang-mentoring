@@ -1,5 +1,12 @@
 basePath: /
 definitions:
+  auth.LoginUserRequest:
+    properties:
+      password:
+        type: string
+      username:
+        type: string
+    type: object
   gorm.DeletedAt:
     properties:
       time:
@@ -33,18 +40,13 @@ definitions:
       username:
         type: string
     type: object
-  request.LoginUser:
-    properties:
-      password:
-        type: string
-      username:
-        type: string
-    type: object
   request.UpdateUser:
     properties:
       email:
         type: string
       id:
+        type: integer
+      old_password:
         type: string
       password_1:
         type: string
@@ -55,19 +57,17 @@ definitions:
     type: object
   users.UsersDomain:
     properties:
-      created_At:
+      createdAt:
         type: string
-      deleted_At:
+      deletedAt:
         $ref: '#/definitions/gorm.DeletedAt'
       email:
         type: string
       id:
-        type: string
+        type: integer
       password:
         type: string
-      token:
-        type: string
-      updated_At:
+      updatedAt:
         type: string
       username:
         type: string
@@ -83,7 +83,7 @@ info:
   title: Go Echo Library Management
   version: "1.0"
 paths:
-  /login:
+  /api/auth/login:
     post:
       consumes:
       - application/json
@@ -94,7 +94,7 @@ paths:
         name: User
         required: true
         schema:
-          $ref: '#/definitions/request.LoginUser'
+          $ref: '#/definitions/auth.LoginUserRequest'
       produces:
       - application/json
       responses:
@@ -108,8 +108,7 @@ paths:
       description: Protected route can only be accessed if the the user has valid
         JWT token.
       parameters:
-      - default: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJVc2VySUQiOiJkMTk3YzY1Ny0zMDY1LTQ0MjYtYmY4ZS05YmJhYWYwYjY5MDciLCJleHAiOjE2NjA4NzQ3MjR9.FV-RV_55zOMO4qD1vjmY0m1ZmeRsvDfMchlbqXjcpkc
-        description: Insert your access token
+      - description: Insert your access token 'Bearer your_token'
         in: header
         name: Authorization
         required: true
@@ -142,12 +141,17 @@ paths:
             $ref: '#/definitions/users.UsersDomain'
       summary: Add user
       tags:
-      - Add new user
+      - Add User
     put:
       consumes:
       - application/json
       description: Update the user to the database.
       parameters:
+      - description: Insert your access token 'Bearer your_token'
+        in: header
+        name: Authorization
+        required: true
+        type: string
       - description: Update User
         in: body
         name: User
@@ -170,6 +174,11 @@ paths:
       - application/json
       description: Soft delete user by passing the user ID.
       parameters:
+      - description: Insert your access token 'Bearer your_token'
+        in: header
+        name: Authorization
+        required: true
+        type: string
       - description: delete user
         in: path
         name: id
@@ -190,6 +199,11 @@ paths:
       description: validate username and password, if user is exists in the database
         RETURN valid user
       parameters:
+      - description: Insert your access token 'Bearer your_token'
+        in: header
+        name: Authorization
+        required: true
+        type: string
       - description: validate user
         in: body
         name: User
@@ -203,7 +217,7 @@ paths:
           description: OK
       summary: Show an account
       tags:
-      - GetUser
+      - Get User
 schemes:
 - http
 swagger: "2.0"
