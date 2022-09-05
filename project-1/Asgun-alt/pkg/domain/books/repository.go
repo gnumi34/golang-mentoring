@@ -9,6 +9,10 @@ type BooksRepository interface {
 	GetAllBook(ctx context.Context) ([]BookDomain, error)
 
 	BorrowedBook(ctx context.Context, domain *BorrowedBook) (*BorrowedBook, error)
-	LendApproval(ctx context.Context, domain *LendRequest) (*LendRequest, error)
+	LendApproval(ctx context.Context, domain *LendBook) (*LendBook, error)
 	ReturnBook(ctx context.Context, domain *BorrowedBook) (*ReturnBookResponse, error)
+
+	ListBorrowedBook(ctx context.Context) ([]BorrowedBook, error)
+	LendListBook(ctx context.Context) ([]LendBook, error)
+	ListReturnedBook(ctx context.Context) ([]BorrowedBook, error)
 }

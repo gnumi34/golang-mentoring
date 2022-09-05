@@ -30,6 +30,7 @@ func FromUserDomain(userDomain *users.UsersDomain) *User {
 		ID:        userDomain.ID,
 		Username:  userDomain.Username,
 		Email:     userDomain.Email,
+		Password:  userDomain.Password,
 		CreatedAt: userDomain.CreatedAt,
 		UpdatedAt: userDomain.UpdatedAt,
 		DeletedAt: userDomain.DeletedAt,

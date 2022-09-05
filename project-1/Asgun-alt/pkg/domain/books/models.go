@@ -30,7 +30,7 @@ type BorrowedBook struct {
 	Notes      string    `gorm:"column:notes"`
 }
 
-type LendRequest struct {
+type LendBook struct {
 	ID         string    `gorm:"primaryKey, column:id"`
 	BookID     string    `gorm:"column:book_id"`
 	UserID     string    `gorm:"column:user_id"`
