@@ -33,6 +33,13 @@ func (usecase *UserUseCase) GetUser(ctx context.Context, userDomain *users.Users
 }
 
 func (usecase *UserUseCase) AddUser(ctx context.Context, userDomain *users.UsersDomain) (*users.UsersDomain, error) {
+	var err error
+
+	userDomain.Password, err = encrypt.HashPassword(userDomain.Password)
+	if err != nil {
+		return nil, err
+	}
+
 	users, err := usecase.repo.AddUser(ctx, userDomain)
 	if err != nil {
 		return nil, err

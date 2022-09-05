@@ -5,7 +5,6 @@ import (
 
 	"golang-mentoring/project-1/Asgun-alt/pkg/domain/users"
 	"golang-mentoring/project-1/Asgun-alt/pkg/domain/users/response"
-	"golang-mentoring/project-1/Asgun-alt/pkg/helper/encrypt"
 	"golang-mentoring/project-1/Asgun-alt/pkg/helper/errcode"
 
 	"gorm.io/gorm"
@@ -44,14 +43,7 @@ func (repo *DBUserRepository) GetUser(ctx context.Context, userDomain *users.Use
 func (repo *DBUserRepository) AddUser(ctx context.Context, userDomain *users.UsersDomain) (*users.UsersDomain, error) {
 	newUser := response.FromUserDomain(userDomain)
 
-	hashedPassword, err := encrypt.HashPassword(userDomain.Password)
-	if err != nil {
-		return nil, err
-	}
-
-	newUser.Password = hashedPassword
-
-	result := repo.db.Create(&newUser)
+	result := repo.db.WithContext(ctx).Create(&newUser)
 	if result.Error != nil {
 		return nil, result.Error
 	}
