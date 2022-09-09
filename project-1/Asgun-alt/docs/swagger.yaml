@@ -7,6 +7,168 @@ definitions:
       username:
         type: string
     type: object
+  books.AddBookRequest:
+    properties:
+      author:
+        type: string
+      book_stock:
+        type: integer
+      book_summary:
+        maxLength: 500
+        type: string
+      max_book_stock:
+        type: integer
+      publisher:
+        maxLength: 50
+        type: string
+      title:
+        maxLength: 50
+        type: string
+    required:
+    - author
+    - book_stock
+    - publisher
+    - title
+    type: object
+  books.BookCollections:
+    properties:
+      author:
+        type: string
+      book_id:
+        type: integer
+      book_stock:
+        type: integer
+      book_summary:
+        type: string
+      created_at:
+        type: string
+      deleted_at:
+        $ref: '#/definitions/gorm.DeletedAt'
+      max_book_stock:
+        type: integer
+      publisher:
+        type: string
+      title:
+        type: string
+      updated_at:
+        type: string
+    type: object
+  books.BorrowBookRequest:
+    properties:
+      book_id:
+        type: integer
+      borrowedAt:
+        type: string
+      dueDate:
+        type: string
+      is_returned:
+        type: boolean
+      notes:
+        maxLength: 100
+        type: string
+      returnedAt:
+        type: string
+      user_id:
+        type: integer
+    required:
+    - book_id
+    - user_id
+    type: object
+  books.BorrowedBook:
+    properties:
+      ID:
+        type: integer
+      book_id:
+        type: integer
+      books:
+        items:
+          $ref: '#/definitions/books.BookCollections'
+        type: array
+      borrowed_at:
+        type: string
+      due_date:
+        type: string
+      is_returned:
+        type: boolean
+      notes:
+        type: string
+      returned_at:
+        type: string
+      user_id:
+        type: integer
+    type: object
+  books.LendBook:
+    properties:
+      ID:
+        type: integer
+      book_id:
+        type: integer
+      is_accepted:
+        type: boolean
+      notes:
+        type: string
+      requested_at:
+        type: string
+      user_id:
+        type: integer
+    type: object
+  books.LendBookRequest:
+    properties:
+      book_id:
+        type: integer
+      is_accepted:
+        type: boolean
+      notes:
+        maxLength: 100
+        type: string
+      requested_at:
+        type: string
+      user_id:
+        type: integer
+    required:
+    - book_id
+    - user_id
+    type: object
+  books.ReturnBookRequest:
+    properties:
+      book_id:
+        type: integer
+      username:
+        type: string
+    required:
+    - username
+    type: object
+  books.ReturnBookResponse:
+    properties:
+      borrowed_books:
+        $ref: '#/definitions/books.BookCollections'
+      late_charge:
+        type: integer
+      username:
+        type: string
+    type: object
+  books.UpdateBookRequest:
+    properties:
+      author:
+        type: string
+      book_stock:
+        type: integer
+      book_summary:
+        maxLength: 500
+        type: string
+      id:
+        type: integer
+      max_book_stock:
+        type: integer
+      publisher:
+        maxLength: 50
+        type: string
+      title:
+        maxLength: 50
+        type: string
+    required:
+    - id
+    type: object
   gorm.DeletedAt:
     properties:
       time:
@@ -103,6 +265,259 @@ paths:
       summary: Login
       tags:
       - Login
+  /api/books:
+    get:
+      consumes:
+      - application/json
+      description: get book collections saved in the database.
+      parameters:
+      - description: get all books
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/books.BookCollections'
+            type: array
+      summary: get all book
+      tags:
+      - get all books
+  /api/books/add:
+    post:
+      consumes:
+      - application/json
+      description: Add new book to the database.
+      parameters:
+      - description: Add book body request
+        in: body
+        name: jsonBody
+        required: true
+        schema:
+          $ref: '#/definitions/books.AddBookRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/books.BookCollections'
+      summary: Add new book
+      tags:
+      - Add book
+  /api/books/admin_lend_approval:
+    post:
+      consumes:
+      - application/json
+      description: Admin lend book approval.
+      parameters:
+      - description: lend book body request
+        in: body
+        name: jsonBody
+        required: true
+        schema:
+          $ref: '#/definitions/books.LendBookRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/books.LendBook'
+      summary: Admin Lend book approval
+      tags:
+      - Admin Lend book approval
+  /api/books/borrow_book:
+    post:
+      consumes:
+      - application/json
+      description: Borrow book from the database.
+      parameters:
+      - description: borrow book body request
+        in: body
+        name: jsonBody
+        required: true
+        schema:
+          $ref: '#/definitions/books.BorrowBookRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/books.BorrowedBook'
+      summary: Borrow book
+      tags:
+      - Borrow book
+  /api/books/borrow_book_history/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Get borrowed book history based on user ID
+      parameters:
+      - description: get borrowed book
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/books.BorrowedBook'
+            type: array
+      summary: Get borrowed book history
+      tags:
+      - Get borrowed book history
+  /api/books/delete/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete book from the database.
+      parameters:
+      - description: delete book
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      summary: Delete book
+      tags:
+      - Delete book
+  /api/books/lend_approval:
+    post:
+      consumes:
+      - application/json
+      description: lend book approval.
+      parameters:
+      - description: lend book body request
+        in: body
+        name: jsonBody
+        required: true
+        schema:
+          $ref: '#/definitions/books.LendBookRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/books.LendBook'
+      summary: Lend book approval
+      tags:
+      - Lend book
+  /api/books/lend_book_history/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Get lend book history based on user ID
+      parameters:
+      - description: get lend book
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/books.LendBook'
+            type: array
+      summary: Get lend book history
+      tags:
+      - Get lend book history
+  /api/books/return_book/{id}:
+    put:
+      consumes:
+      - application/json
+      description: Return book
+      parameters:
+      - description: return book
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: return book body request
+        in: body
+        name: jsonBody
+        required: true
+        schema:
+          $ref: '#/definitions/books.ReturnBookRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/books.ReturnBookResponse'
+      summary: Return book
+      tags:
+      - Return book
+  /api/books/returned_book_history/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Get returned book history based on user ID
+      parameters:
+      - description: get return book
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/books.BorrowedBook'
+            type: array
+      summary: Get returned book history
+      tags:
+      - Get returned book history
+  /api/books/update:
+    put:
+      consumes:
+      - application/json
+      description: Update book to the database.
+      parameters:
+      - description: update book
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Update book body request
+        in: body
+        name: jsonBody
+        required: true
+        schema:
+          $ref: '#/definitions/books.UpdateBookRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/books.BookCollections'
+      summary: Update book
+      tags:
+      - Update book
   /user/protected:
     get:
       description: Protected route can only be accessed if the the user has valid

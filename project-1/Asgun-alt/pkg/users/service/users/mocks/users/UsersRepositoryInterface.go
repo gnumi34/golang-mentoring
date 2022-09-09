@@ -74,6 +74,29 @@ func (_m *UsersRepositoryInterface) FindUserByID(ctx context.Context, id uint) (
 	return r0, r1
 }
 
+// FindUserByUsername provides a mock function with given fields: ctx, username
+func (_m *UsersRepositoryInterface) FindUserByUsername(ctx context.Context, username string) (*users.UsersDomain, error) {
+	ret := _m.Called(ctx, username)
+
+	var r0 *users.UsersDomain
+	if rf, ok := ret.Get(0).(func(context.Context, string) *users.UsersDomain); ok {
+		r0 = rf(ctx, username)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*users.UsersDomain)
+		}
+	}
+
+	var r1 error
+	if rf, ok := ret.Get(1).(func(context.Context, string) error); ok {
+		r1 = rf(ctx, username)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
 // GetUser provides a mock function with given fields: ctx, req
 func (_m *UsersRepositoryInterface) GetUser(ctx context.Context, req *users.UsersDomain) (*users.UsersDomain, error) {
 	ret := _m.Called(ctx, req)
