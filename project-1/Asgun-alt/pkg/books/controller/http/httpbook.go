@@ -6,8 +6,11 @@ import (
 	"golang-mentoring/project-1/Asgun-alt/pkg/common/controller"
 	"golang-mentoring/project-1/Asgun-alt/pkg/domain/books"
 	"golang-mentoring/project-1/Asgun-alt/pkg/helper/errcode"
+	customMiddleware "golang-mentoring/project-1/Asgun-alt/pkg/middleware"
 	"net/http"
 	"strconv"
+
+	"github.com/labstack/echo/v4/middleware"
 
 	"github.com/go-playground/validator/v10"
 	"github.com/labstack/echo/v4"
@@ -23,20 +26,22 @@ func NewBooksHTTPHandler(appGroup *echo.Group, uc books.Usecase) {
 		UseCase: uc,
 	}
 
+	jwtConfig := customMiddleware.NewJWTMiddlewareConfig()
+
 	booksGroup := appGroup.Group("/books")
 	booksGroup.GET("", handler.GetAllBook)
-	booksGroup.POST("/add", handler.AddBook)
-	booksGroup.PUT("/update", handler.UpdateBook)
-	booksGroup.DELETE("/delete/:id", handler.DeleteBook)
+	booksGroup.POST("/add", handler.AddBook, middleware.JWTWithConfig(jwtConfig))
+	booksGroup.PUT("/update", handler.UpdateBook, middleware.JWTWithConfig(jwtConfig))
+	booksGroup.DELETE("/delete/:id", handler.DeleteBook, middleware.JWTWithConfig(jwtConfig))
 
-	booksGroup.POST("/borrow_book", handler.BorrowBook)
-	booksGroup.POST("/lend_approval", handler.LendApproval)
-	booksGroup.POST("/admin_lend_approval", handler.AdminLendApproval)
-	booksGroup.PUT("/return_book/:id", handler.ReturnBook)
+	booksGroup.POST("/borrow_book", handler.BorrowBook, middleware.JWTWithConfig(jwtConfig))
+	booksGroup.POST("/lend_approval", handler.LendApproval, middleware.JWTWithConfig(jwtConfig))
+	booksGroup.PUT("/admin_lend_approval", handler.AdminLendApproval, middleware.JWTWithConfig(jwtConfig))
+	booksGroup.PUT("/return_book/:id", handler.ReturnBook, middleware.JWTWithConfig(jwtConfig))
 
-	booksGroup.GET("/borrow_book_history/:id", handler.GetBorrowedBookHistory)
-	booksGroup.GET("/lend_book_history/:id", handler.GetLendBookHistory)
-	booksGroup.GET("/returned_book_history/:id", handler.GetReturnedBookHistory)
+	booksGroup.GET("/borrow_book_history/:id", handler.GetBorrowedBookHistory, middleware.JWTWithConfig(jwtConfig))
+	booksGroup.GET("/lend_book_history/:id", handler.GetLendBookHistory, middleware.JWTWithConfig(jwtConfig))
+	booksGroup.GET("/returned_book_history/:id", handler.GetReturnedBookHistory, middleware.JWTWithConfig(jwtConfig))
 }
 
 // GetAllBook godoc
@@ -51,7 +56,7 @@ func NewBooksHTTPHandler(appGroup *echo.Group, uc books.Usecase) {
 func (h *BooksHTTPHandler) GetAllBook(ctx echo.Context) error {
 	res, err := h.UseCase.GetAllBook(ctx.Request().Context())
 	if err != nil {
-		errCode, errMessage := errcode.CheckErrorGetAllBook(err)
+		errCode, errMessage := errcode.CheckErrorBookUsecase(err)
 		return h.common.ErrorResponse(ctx, errCode, errMessage)
 	}
 
@@ -86,7 +91,7 @@ func (h *BooksHTTPHandler) AddBook(ctx echo.Context) error {
 
 	book, err := h.UseCase.AddBook(ctx.Request().Context(), request.ToBookDomain())
 	if err != nil {
-		errCode, errMessage := errcode.CheckErrorAddBook(err)
+		errCode, errMessage := errcode.CheckErrorBookUsecase(err)
 		return h.common.ErrorResponse(ctx, errCode, errMessage)
 	}
 
@@ -122,7 +127,7 @@ func (h *BooksHTTPHandler) UpdateBook(ctx echo.Context) error {
 
 	err := h.UseCase.UpdateBook(ctx.Request().Context(), request.ToBookDomain())
 	if err != nil {
-		errCode, errMessage := errcode.CheckErrorUpdateBook(err)
+		errCode, errMessage := errcode.CheckErrorBookUsecase(err)
 		return h.common.ErrorResponse(ctx, errCode, errMessage)
 	}
 
@@ -152,7 +157,7 @@ func (h *BooksHTTPHandler) DeleteBook(ctx echo.Context) error {
 
 	err = h.UseCase.DeleteBook(ctx.Request().Context(), &books.BookCollections{BookID: uint(id)})
 	if err != nil {
-		errCode, errMessage := errcode.CheckErrorDeleteBook(err)
+		errCode, errMessage := errcode.CheckErrorBookUsecase(err)
 		return h.common.ErrorResponse(ctx, errCode, errMessage)
 	}
 	return h.common.SuccessOkResponse(ctx)
@@ -186,7 +191,7 @@ func (h *BooksHTTPHandler) BorrowBook(ctx echo.Context) error {
 
 	response, err := h.UseCase.BorrowBook(ctx.Request().Context(), request.ToBookDomain())
 	if err != nil {
-		errCode, errMessage := errcode.CheckErrorBorrowBook(err)
+		errCode, errMessage := errcode.CheckErrorBookUsecase(err)
 		return h.common.ErrorResponse(ctx, errCode, errMessage)
 	}
 
@@ -221,7 +226,7 @@ func (h *BooksHTTPHandler) LendApproval(ctx echo.Context) error {
 
 	response, err := h.UseCase.LendApproval(ctx.Request().Context(), request.ToBookDomain())
 	if err != nil {
-		errCode, errMessage := errcode.CheckErrorBorrowBook(err)
+		errCode, errMessage := errcode.CheckErrorBookUsecase(err)
 		return h.common.ErrorResponse(ctx, errCode, errMessage)
 	}
 
@@ -245,7 +250,7 @@ func (h *BooksHTTPHandler) AdminLendApproval(ctx echo.Context) error {
 
 	response, err := h.UseCase.AdminLendApproval(ctx.Request().Context(), request.ToBookDomain())
 	if err != nil {
-		errCode, errMessage := errcode.CheckErrorBorrowBook(err)
+		errCode, errMessage := errcode.CheckErrorBookUsecase(err)
 		return h.common.ErrorResponse(ctx, errCode, errMessage)
 	}
 
@@ -293,7 +298,7 @@ func (h *BooksHTTPHandler) ReturnBook(ctx echo.Context) error {
 	request.BookID = uint(id)
 	response, err := h.UseCase.ReturnBook(ctx.Request().Context(), request.Username, request.BookID)
 	if err != nil {
-		errCode, errMessage := errcode.CheckErrorBorrowBook(err)
+		errCode, errMessage := errcode.CheckErrorBookUsecase(err)
 		return h.common.ErrorResponse(ctx, errCode, errMessage)
 	}
 
@@ -323,7 +328,7 @@ func (h *BooksHTTPHandler) GetBorrowedBookHistory(ctx echo.Context) error {
 
 	res, err := h.UseCase.ListBorrowedBook(ctx.Request().Context(), &books.GetUserHistories{UserID: uint(id)})
 	if err != nil {
-		errCode, errMessage := errcode.CheckErrorGetAllBook(err)
+		errCode, errMessage := errcode.CheckErrorBookUsecase(err)
 		return h.common.ErrorResponse(ctx, errCode, errMessage)
 	}
 
@@ -353,7 +358,7 @@ func (h *BooksHTTPHandler) GetLendBookHistory(ctx echo.Context) error {
 
 	res, err := h.UseCase.LendListBook(ctx.Request().Context(), &books.GetUserHistories{UserID: uint(id)})
 	if err != nil {
-		errCode, errMessage := errcode.CheckErrorGetAllBook(err)
+		errCode, errMessage := errcode.CheckErrorBookUsecase(err)
 		return h.common.ErrorResponse(ctx, errCode, errMessage)
 	}
 
@@ -383,7 +388,7 @@ func (h *BooksHTTPHandler) GetReturnedBookHistory(ctx echo.Context) error {
 
 	res, err := h.UseCase.ListReturnedBook(ctx.Request().Context(), &books.GetUserHistories{UserID: uint(id)})
 	if err != nil {
-		errCode, errMessage := errcode.CheckErrorGetAllBook(err)
+		errCode, errMessage := errcode.CheckErrorBookUsecase(err)
 		return h.common.ErrorResponse(ctx, errCode, errMessage)
 	}
 

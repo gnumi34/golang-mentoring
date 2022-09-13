@@ -24,5 +24,4 @@ var (
 	ErrBookNotFound        = errors.New("book not found")
 	ErrStockUnavailable    = errors.New("book is out of stock")
 	ErrLendRequestNotFound = errors.New("lend request not found")
-	ErrMaxStockBookLimit   = errors.New("stock exceeded max book limit")
 )

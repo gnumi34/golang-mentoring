@@ -67,6 +67,7 @@ func (data *BorrowBookRequest) ToBookDomain() *BorrowedBook {
 }
 
 type LendBookRequest struct {
+	LendID      uint      `json:"lend_id" validate:"required"`
 	BookID      uint      `json:"book_id" validate:"required"`
 	UserID      uint      `json:"user_id" validate:"required"`
 	RequestedAt time.Time `json:"requested_at"`
@@ -76,6 +77,7 @@ type LendBookRequest struct {
 
 func (data *LendBookRequest) ToBookDomain() *LendBook {
 	return &LendBook{
+		ID:          data.LendID,
 		BookID:      data.BookID,
 		UserID:      data.UserID,
 		RequestedAt: data.RequestedAt,

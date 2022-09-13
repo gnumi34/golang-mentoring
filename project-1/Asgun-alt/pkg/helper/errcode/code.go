@@ -81,66 +81,21 @@ func ErrorUnauthorizedCheck(thisError error) (int, error) {
 	return http.StatusInternalServerError, ErrInternalServer
 }
 
-func CheckErrorAddBook(thisError error) (int, error) {
-	if errors.Is(thisError, ErrNotFound) {
+func CheckErrorBookUsecase(thisError error) (int, error) {
+	switch {
+	case errors.Is(thisError, ErrNotFound):
 		return http.StatusNotFound, ErrNotFound
-	} else if errors.Is(thisError, ErrIDEmpty) {
+	case errors.Is(thisError, ErrRecordNotFound):
+		return http.StatusNotFound, ErrRecordNotFound
+	case errors.Is(thisError, ErrIDEmpty):
 		return http.StatusNotFound, ErrIDEmpty
-	} else if errors.Is(thisError, ErrRecordNotFound) {
-		return http.StatusNotFound, ErrRecordNotFound
-	} else if errors.Is(thisError, ErrBookNotFound) {
-		return http.StatusNotFound, ErrBookNotFound
-	}
-
-	return http.StatusInternalServerError, ErrInternalServer
-}
-
-func CheckErrorGetAllBook(thisError error) (int, error) {
-	if errors.Is(thisError, ErrNotFound) {
-		return http.StatusNotFound, ErrNotFound
-	} else if errors.Is(thisError, ErrRecordNotFound) {
-		return http.StatusNotFound, ErrRecordNotFound
-	}
-
-	return http.StatusInternalServerError, ErrInternalServer
-}
-
-func CheckErrorUpdateBook(thisError error) (int, error) {
-	if errors.Is(thisError, ErrNotFound) {
-		return http.StatusNotFound, ErrNotFound
-	} else if errors.Is(thisError, ErrRecordNotFound) {
-		return http.StatusNotFound, ErrRecordNotFound
-	}
-
-	return http.StatusInternalServerError, ErrInternalServer
-}
-
-func CheckErrorDeleteBook(thisError error) (int, error) {
-	if errors.Is(thisError, ErrNotFound) {
-		return http.StatusNotFound, ErrNotFound
-	} else if errors.Is(thisError, ErrRecordNotFound) {
-		return http.StatusNotFound, ErrRecordNotFound
-	} else if errors.Is(thisError, ErrIDEmpty) {
-		return http.StatusNotFound, ErrIDEmpty
-	}
-
-	return http.StatusInternalServerError, ErrInternalServer
-}
-
-func CheckErrorBorrowBook(thisError error) (int, error) {
-	if errors.Is(thisError, ErrNotFound) {
-		return http.StatusNotFound, ErrNotFound
-	} else if errors.Is(thisError, ErrRecordNotFound) {
-		return http.StatusNotFound, ErrRecordNotFound
-	} else if errors.Is(thisError, ErrIDEmpty) {
-		return http.StatusNotFound, ErrIDEmpty
-	} else if errors.Is(thisError, ErrStockUnavailable) {
+	case errors.Is(thisError, ErrStockUnavailable):
 		return http.StatusAccepted, ErrStockUnavailable
-	} else if errors.Is(thisError, ErrLendRequestNotFound) {
+	case errors.Is(thisError, ErrLendRequestNotFound):
 		return http.StatusNotFound, ErrLendRequestNotFound
-	} else if errors.Is(thisError, ErrMaxStockBookLimit) {
-		return http.StatusBadRequest, ErrMaxStockBookLimit
+	case errors.Is(thisError, ErrBookNotFound):
+		return http.StatusNotFound, ErrBookNotFound
+	default:
+		return http.StatusInternalServerError, ErrInternalServer
 	}
-
-	return http.StatusInternalServerError, ErrInternalServer
 }

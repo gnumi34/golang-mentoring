@@ -43,11 +43,10 @@ func (r *BooksDBRepository) GetBookByUserID(ctx context.Context, userID uint, bo
 	)
 
 	err := r.DB.Table("borrowed_books").
-		Select("*").
+		Select("book_collections.book_id, title, author, publisher, book_summary, book_stock").
 		Joins("INNER JOIN users ON borrowed_books.user_id = users.id").
 		Joins("INNER JOIN book_collections ON borrowed_books.book_id = book_collections.book_id").
 		Where("users.id = ? AND borrowed_books.book_id = ?", userID, bookID).
-		Unscoped().
 		Find(&response)
 	if err.Error != nil {
 		fmt.Println("error: ", err)
@@ -118,6 +117,15 @@ func (r *BooksDBRepository) BorrowBook(ctx context.Context, req *books.BorrowedB
 func (r *BooksDBRepository) LendApproval(ctx context.Context, req *books.LendBook) (*books.LendBook, error) {
 	res := books.FromLendAprrovalDomain(req)
 	err := r.DB.WithContext(ctx).Create(&res).Error
+	if err != nil {
+		return nil, fmt.Errorf("BooksDBRepository.LendApproval: %w", err)
+	}
+	return res, nil
+}
+
+func (r *BooksDBRepository) LendAdminApproval(ctx context.Context, req *books.LendBook) (*books.LendBook, error) {
+	res := books.FromLendAprrovalDomain(req)
+	err := r.DB.WithContext(ctx).Where("id = ?", req.ID).Updates(&res).Error
 	if err != nil {
 		return nil, fmt.Errorf("BooksDBRepository.LendApproval: %w", err)
 	}

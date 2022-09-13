@@ -20,6 +20,7 @@ CREATE TABLE public.borrowed_books (
     status BOOLEAN,
     returned_at TIMESTAMP,
     notes VARCHAR(100),
+    deleted_at TIMESTAMP
     FOREIGN KEY (book_id) REFERENCES book_collection(book_id),
     FOREIGN KEY (user_id) REFERENCES users(id)
 );

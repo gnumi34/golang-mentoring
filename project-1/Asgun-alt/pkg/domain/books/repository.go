@@ -17,6 +17,7 @@ type Repository interface {
 
 	BorrowBook(ctx context.Context, domain *BorrowedBook) (*BorrowedBook, error)
 	LendApproval(ctx context.Context, domain *LendBook) (*LendBook, error)
+	LendAdminApproval(ctx context.Context, domain *LendBook) (*LendBook, error)
 	ReturnBook(ctx context.Context, domain *BorrowedBook) error
 
 	ListBorrowedBook(ctx context.Context, userID uint) ([]BorrowedBook, error)

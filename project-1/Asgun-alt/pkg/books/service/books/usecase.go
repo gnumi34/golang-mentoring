@@ -121,7 +121,7 @@ func (uc *BooksUseCase) AdminLendApproval(ctx context.Context, req *books.LendBo
 	}
 
 	req.IsAccepted = true
-	res, err := uc.DBRepo.LendApproval(ctx, req)
+	res, err := uc.DBRepo.LendAdminApproval(ctx, req)
 	if err != nil {
 		return nil, err
 	}
@@ -169,9 +169,6 @@ func (uc *BooksUseCase) ReturnBook(ctx context.Context, username string, bookID 
 	}
 
 	booksResult.Stock += 1
-	if booksResult.Stock > booksResult.MaxStock {
-		return nil, errcode.ErrMaxStockBookLimit
-	}
 	err = uc.DBRepo.UpdateByID(ctx, booksResult)
 	if err != nil {
 		return nil, err
