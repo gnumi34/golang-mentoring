@@ -64,7 +64,7 @@ func (uc *UserController) GetUser(c echo.Context) error {
 
 	_, err := uc.usecase.GetUser(ctx, req.ToGetUserDomain())
 	if err != nil {
-		errCode, errMessage := errcode.ErrorGetUserCheck(err)
+		errCode, errMessage := errcode.CheckErrorUserUsecase(err)
 		return uc.handler.ErrorResponse(c, errCode, errMessage)
 	}
 
@@ -104,7 +104,7 @@ func (uc *UserController) AddUser(c echo.Context) error {
 
 	_, result := uc.usecase.AddUser(ctx, req.ToUserDomain())
 	if result != nil {
-		errCode, errMessage := errcode.CheckErrorAddUsers(result)
+		errCode, errMessage := errcode.CheckErrorUserUsecase(result)
 		return uc.handler.ErrorResponse(c, errCode, errMessage)
 	}
 	return uc.handler.SuccessOkResponse(c)
@@ -140,7 +140,7 @@ func (uc *UserController) UpdateUser(c echo.Context) error {
 	_, err := uc.usecase.UpdateUser(ctx, req.OldPassword, req.ToUpdateUserDomain())
 
 	if err != nil {
-		errCode, errMessage := errcode.ErrorUpdateUsersCheck(err)
+		errCode, errMessage := errcode.CheckErrorUserUsecase(err)
 		return uc.handler.ErrorResponse(c, errCode, errMessage)
 	}
 	return uc.handler.SuccessOkResponse(c)
@@ -168,7 +168,7 @@ func (uc *UserController) DeleteUser(c echo.Context) error {
 	ctx := c.Request().Context()
 	result := uc.usecase.DeleteUser(ctx, uint(id))
 	if result != nil {
-		errCode, errMessage := errcode.ErrorDeleteUsersCheck(result)
+		errCode, errMessage := errcode.CheckErrorUserUsecase(result)
 		return uc.handler.ErrorResponse(c, errCode, errMessage)
 	}
 	return uc.handler.SuccessOkResponse(c)

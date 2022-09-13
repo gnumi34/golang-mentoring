@@ -16,7 +16,7 @@ type BookCollections struct {
 	MaxStock    int            `gorm:"column:max_book_stock" json:"max_book_stock"`
 	Created_At  time.Time      `gorm:"autoCreateTime:true;column:created_at" json:"created_at"`
 	Updated_At  time.Time      `gorm:"column:updated_at" json:"updated_at"`
-	Deleted_At  gorm.DeletedAt `gorm:"column:deleted_at" json:"deleted_at"`
+	Deleted_At  gorm.DeletedAt `gorm:"column:deleted_at" json:"-"`
 }
 
 type BorrowedBook struct {
@@ -28,15 +28,20 @@ type BorrowedBook struct {
 	IsReturned bool              `gorm:"column:is_returned" json:"is_returned"`
 	ReturnedAt time.Time         `gorm:"returned_at" json:"returned_at"`
 	Notes      string            `gorm:"column:notes" json:"notes"`
+	Created_At time.Time         `gorm:"autoCreateTime:true;column:created_at" json:"created_at"`
+	Updated_At time.Time         `gorm:"column:updated_at" json:"updated_at"`
 	Deleted_At gorm.DeletedAt    `gorm:"column:deleted_at" json:"-"`
 	Books      []BookCollections `gorm:"foreignKey:BookID" json:"-"`
 }
 
 type LendBook struct {
-	ID          uint      `gorm:"autoIncrement:true;primaryKey;column:id" json:"ID"`
-	BookID      uint      `gorm:"column:book_id" json:"book_id"`
-	UserID      uint      `gorm:"column:user_id" json:"user_id"`
-	RequestedAt time.Time `gorm:"autoCreateTime:true;column:requested_at" json:"requested_at"`
-	IsAccepted  bool      `gorm:"column:is_accepted" json:"is_accepted"`
-	Notes       string    `gorm:"column:notes" json:"notes"`
+	ID          uint           `gorm:"autoIncrement:true;primaryKey;column:id" json:"ID"`
+	BookID      uint           `gorm:"column:book_id" json:"book_id"`
+	UserID      uint           `gorm:"column:user_id" json:"user_id"`
+	RequestedAt time.Time      `gorm:"autoCreateTime:true;column:requested_at" json:"requested_at"`
+	IsAccepted  bool           `gorm:"column:is_accepted" json:"is_accepted"`
+	Notes       string         `gorm:"column:notes" json:"notes"`
+	Created_At  time.Time      `gorm:"autoCreateTime:true;column:created_at" json:"created_at"`
+	Updated_At  time.Time      `gorm:"column:updated_at" json:"updated_at"`
+	Deleted_At  gorm.DeletedAt `gorm:"column:deleted_at" json:"-"`
 }
