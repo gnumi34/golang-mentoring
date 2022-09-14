@@ -30,4 +30,6 @@ type UsersRepositoryInterface interface {
 	UpdateUser(ctx context.Context, req *UsersDomain) (*UsersDomain, error)
 	DeleteUser(ctx context.Context, id uint) error
 	FindUserByID(ctx context.Context, id uint) (*UsersDomain, error)
+
+	FindUserByUsername(ctx context.Context, username string) (*UsersDomain, error)
 }

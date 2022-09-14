@@ -18,6 +18,15 @@ func NewDBUserRepository(gormDB *gorm.DB) users.UsersRepositoryInterface {
 	return &DBUserRepository{db: gormDB}
 }
 
+func (repo *DBUserRepository) FindUserByUsername(ctx context.Context, username string) (*users.UsersDomain, error) {
+	var res response.User
+
+	if err := repo.db.WithContext(ctx).First(&res, "username = ?", username).Error; err != nil {
+		return nil, errcode.ErrUserNotFound
+	}
+	return (*users.UsersDomain)(&res), nil
+}
+
 func (repo *DBUserRepository) FindUserByID(ctx context.Context, id uint) (*users.UsersDomain, error) {
 	var res response.User
 

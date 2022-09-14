@@ -2,17 +2,18 @@ package books
 
 import "context"
 
-type BooksUsecase interface {
-	AddBook(ctx context.Context, domain *BookDomain) (*BookDomain, error)
-	UpdateBook(ctx context.Context, domain *BookDomain) error
-	DeleteBook(ctx context.Context, domain *BookDomain) error
-	GetAllBook(ctx context.Context) ([]BookDomain, error)
+type Usecase interface {
+	AddBook(ctx context.Context, domain *BookCollections) (*BookCollections, error)
+	UpdateBook(ctx context.Context, domain *BookCollections) error
+	DeleteBook(ctx context.Context, domain *BookCollections) error
+	GetAllBook(ctx context.Context) ([]BookCollections, error)
 
-	BorrowedBook(ctx context.Context, domain *BorrowedBook) (*BorrowedBook, error)
+	BorrowBook(ctx context.Context, domain *BorrowedBook) (*BorrowedBook, error)
 	LendApproval(ctx context.Context, domain *LendBook) (*LendBook, error)
-	ReturnBook(ctx context.Context, domain *BorrowedBook) (*ReturnBookResponse, error)
+	AdminLendApproval(ctx context.Context, domain *LendBook) (*LendBook, error)
+	ReturnBook(ctx context.Context, username string, bookID uint) (*ReturnBookResponse, error)
 
-	ListBorrowedBook(ctx context.Context) ([]BorrowedBook, error)
-	LendListBook(ctx context.Context) ([]LendBook, error)
-	ListReturnedBook(ctx context.Context) ([]BorrowedBook, error)
+	ListBorrowedBook(ctx context.Context, domain *GetUserHistories) ([]BorrowedBook, error)
+	LendListBook(ctx context.Context, domain *GetUserHistories) ([]LendBook, error)
+	ListReturnedBook(ctx context.Context, domain *GetUserHistories) ([]BorrowedBook, error)
 }

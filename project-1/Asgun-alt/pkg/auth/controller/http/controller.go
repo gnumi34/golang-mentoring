@@ -52,7 +52,7 @@ func (h *AuthHandler) Login(c echo.Context) error {
 	ctx := c.Request().Context()
 	res, err = h.UseCase.Login(ctx, &req)
 	if err != nil {
-		errCode, errMessage := errcode.ErrorUnauthorizedCheck(err)
+		errCode, errMessage := errcode.CheckErrorUnauthorized(err)
 		return h.handler.ErrorResponse(c, errCode, errMessage)
 	}
 	return h.handler.SuccessDataResponse(c, res)

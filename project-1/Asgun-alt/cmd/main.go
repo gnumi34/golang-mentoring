@@ -10,7 +10,12 @@ import (
 	authHTTPHandler "golang-mentoring/project-1/Asgun-alt/pkg/auth/controller/http"
 	authRepository "golang-mentoring/project-1/Asgun-alt/pkg/auth/repository/db"
 	authUseCase "golang-mentoring/project-1/Asgun-alt/pkg/auth/service"
+	booksHTTPHandler "golang-mentoring/project-1/Asgun-alt/pkg/books/controller/http"
+	booksRepository "golang-mentoring/project-1/Asgun-alt/pkg/books/repository/db"
+	booksUseCase "golang-mentoring/project-1/Asgun-alt/pkg/books/service/books"
 	"golang-mentoring/project-1/Asgun-alt/pkg/domain/auth"
+	"golang-mentoring/project-1/Asgun-alt/pkg/domain/books"
+	"golang-mentoring/project-1/Asgun-alt/pkg/domain/users"
 	"golang-mentoring/project-1/Asgun-alt/pkg/helper"
 	userController "golang-mentoring/project-1/Asgun-alt/pkg/users/controllers/http"
 	userRepo "golang-mentoring/project-1/Asgun-alt/pkg/users/repository/db"
@@ -53,6 +58,14 @@ func main() {
 	if err != nil {
 		panic(fmt.Errorf("fatal error config file: %w", err))
 	}
+	validator := config.NewCustomValidator()
+	e.Validator = validator
+	e.Use(func(next echo.HandlerFunc) echo.HandlerFunc {
+		return func(ctx echo.Context) error {
+			ctx.Set("validator", validator)
+			return next(ctx)
+		}
+	})
 
 	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
 		AllowOrigins: []string{"http://localhost:8000"},
@@ -73,6 +86,7 @@ func main() {
 
 	api := e.Group("/api")
 	InitAuthHandler(api, db)
+	InitBooksHandler(api, db, usersRepoInterface)
 
 	initRoutes.RoutesUser(e)
 	fmt.Println(e.Start(viper.GetString(`server.address`)))
@@ -82,4 +96,10 @@ func InitAuthHandler(appGroup *echo.Group, db *gorm.DB) {
 	var dbRepository auth.Repository = authRepository.NewDBAuthRepository(db)
 	var useCase auth.UseCase = authUseCase.NewAuthUseCase(dbRepository)
 	authHTTPHandler.NewAuthController(appGroup, useCase)
+}
+
+func InitBooksHandler(appGroup *echo.Group, db *gorm.DB, usersRepo users.UsersRepositoryInterface) {
+	var dbRepository books.Repository = booksRepository.NewBooksDBRepository(db)
+	var useCase books.Usecase = booksUseCase.NewBooksUseCase(dbRepository, usersRepo)
+	booksHTTPHandler.NewBooksHTTPHandler(appGroup, useCase)
 }

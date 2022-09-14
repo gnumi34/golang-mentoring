@@ -48,6 +48,393 @@
                 }
             }
         },
+        "/api/books": {
+            "get": {
+                "description": "get book collections saved in the database.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "get all books"
+                ],
+                "summary": "get all book",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "get all books",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/books.BookCollections"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/books/add": {
+            "post": {
+                "description": "Add new book to the database.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Add book"
+                ],
+                "summary": "Add new book",
+                "parameters": [
+                    {
+                        "description": "Add book body request",
+                        "name": "jsonBody",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/books.AddBookRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/books.BookCollections"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/books/admin_lend_approval": {
+            "post": {
+                "description": "Admin lend book approval.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Admin Lend book approval"
+                ],
+                "summary": "Admin Lend book approval",
+                "parameters": [
+                    {
+                        "description": "lend book body request",
+                        "name": "jsonBody",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/books.LendBookRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/books.LendBook"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/books/borrow_book": {
+            "post": {
+                "description": "Borrow book from the database.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Borrow book"
+                ],
+                "summary": "Borrow book",
+                "parameters": [
+                    {
+                        "description": "borrow book body request",
+                        "name": "jsonBody",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/books.BorrowBookRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/books.BorrowedBook"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/books/borrow_book_history/{id}": {
+            "get": {
+                "description": "Get borrowed book history based on user ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Get borrowed book history"
+                ],
+                "summary": "Get borrowed book history",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "get borrowed book",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/books.BorrowedBook"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/books/delete/{id}": {
+            "delete": {
+                "description": "Delete book from the database.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Delete book"
+                ],
+                "summary": "Delete book",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "delete book",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/api/books/lend_approval": {
+            "post": {
+                "description": "lend book approval.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Lend book"
+                ],
+                "summary": "Lend book approval",
+                "parameters": [
+                    {
+                        "description": "lend book body request",
+                        "name": "jsonBody",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/books.LendBookRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/books.LendBook"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/books/lend_book_history/{id}": {
+            "get": {
+                "description": "Get lend book history based on user ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Get lend book history"
+                ],
+                "summary": "Get lend book history",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "get lend book",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/books.LendBook"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/books/return_book/{id}": {
+            "put": {
+                "description": "Return book",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Return book"
+                ],
+                "summary": "Return book",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "return book",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "return book body request",
+                        "name": "jsonBody",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/books.ReturnBookRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/books.ReturnBookResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/books/returned_book_history/{id}": {
+            "get": {
+                "description": "Get returned book history based on user ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Get returned book history"
+                ],
+                "summary": "Get returned book history",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "get return book",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/books.BorrowedBook"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/books/update": {
+            "put": {
+                "description": "Update book to the database.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Update book"
+                ],
+                "summary": "Update book",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "update book",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Update book body request",
+                        "name": "jsonBody",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/books.UpdateBookRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/books.BookCollections"
+                        }
+                    }
+                }
+            }
+        },
         "/user/protected": {
             "get": {
                 "description": "Protected route can only be accessed if the the user has valid JWT token.",
@@ -228,6 +615,247 @@
                 },
                 "username": {
                     "type": "string"
+                }
+            }
+        },
+        "books.AddBookRequest": {
+            "type": "object",
+            "required": [
+                "author",
+                "book_stock",
+                "publisher",
+                "title"
+            ],
+            "properties": {
+                "author": {
+                    "type": "string"
+                },
+                "book_stock": {
+                    "type": "integer"
+                },
+                "book_summary": {
+                    "type": "string",
+                    "maxLength": 500
+                },
+                "max_book_stock": {
+                    "type": "integer"
+                },
+                "publisher": {
+                    "type": "string",
+                    "maxLength": 50
+                },
+                "title": {
+                    "type": "string",
+                    "maxLength": 50
+                }
+            }
+        },
+        "books.BookCollections": {
+            "type": "object",
+            "properties": {
+                "author": {
+                    "type": "string"
+                },
+                "book_id": {
+                    "type": "integer"
+                },
+                "book_stock": {
+                    "type": "integer"
+                },
+                "book_summary": {
+                    "type": "string"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "deleted_at": {
+                    "$ref": "#/definitions/gorm.DeletedAt"
+                },
+                "max_book_stock": {
+                    "type": "integer"
+                },
+                "publisher": {
+                    "type": "string"
+                },
+                "title": {
+                    "type": "string"
+                },
+                "updated_at": {
+                    "type": "string"
+                }
+            }
+        },
+        "books.BorrowBookRequest": {
+            "type": "object",
+            "required": [
+                "book_id",
+                "user_id"
+            ],
+            "properties": {
+                "book_id": {
+                    "type": "integer"
+                },
+                "borrowedAt": {
+                    "type": "string"
+                },
+                "dueDate": {
+                    "type": "string"
+                },
+                "is_returned": {
+                    "type": "boolean"
+                },
+                "notes": {
+                    "type": "string",
+                    "maxLength": 100
+                },
+                "returnedAt": {
+                    "type": "string"
+                },
+                "user_id": {
+                    "type": "integer"
+                }
+            }
+        },
+        "books.BorrowedBook": {
+            "type": "object",
+            "properties": {
+                "ID": {
+                    "type": "integer"
+                },
+                "book_id": {
+                    "type": "integer"
+                },
+                "books": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/books.BookCollections"
+                    }
+                },
+                "borrowed_at": {
+                    "type": "string"
+                },
+                "due_date": {
+                    "type": "string"
+                },
+                "is_returned": {
+                    "type": "boolean"
+                },
+                "notes": {
+                    "type": "string"
+                },
+                "returned_at": {
+                    "type": "string"
+                },
+                "user_id": {
+                    "type": "integer"
+                }
+            }
+        },
+        "books.LendBook": {
+            "type": "object",
+            "properties": {
+                "ID": {
+                    "type": "integer"
+                },
+                "book_id": {
+                    "type": "integer"
+                },
+                "is_accepted": {
+                    "type": "boolean"
+                },
+                "notes": {
+                    "type": "string"
+                },
+                "requested_at": {
+                    "type": "string"
+                },
+                "user_id": {
+                    "type": "integer"
+                }
+            }
+        },
+        "books.LendBookRequest": {
+            "type": "object",
+            "required": [
+                "book_id",
+                "user_id"
+            ],
+            "properties": {
+                "book_id": {
+                    "type": "integer"
+                },
+                "is_accepted": {
+                    "type": "boolean"
+                },
+                "notes": {
+                    "type": "string",
+                    "maxLength": 100
+                },
+                "requested_at": {
+                    "type": "string"
+                },
+                "user_id": {
+                    "type": "integer"
+                }
+            }
+        },
+        "books.ReturnBookRequest": {
+            "type": "object",
+            "required": [
+                "username"
+            ],
+            "properties": {
+                "book_id": {
+                    "type": "integer"
+                },
+                "username": {
+                    "type": "string"
+                }
+            }
+        },
+        "books.ReturnBookResponse": {
+            "type": "object",
+            "properties": {
+                "borrowed_books": {
+                    "$ref": "#/definitions/books.BookCollections"
+                },
+                "late_charge": {
+                    "type": "integer"
+                },
+                "username": {
+                    "type": "string"
+                }
+            }
+        },
+        "books.UpdateBookRequest": {
+            "type": "object",
+            "required": [
+                "id"
+            ],
+            "properties": {
+                "author": {
+                    "type": "string"
+                },
+                "book_stock": {
+                    "type": "integer"
+                },
+                "book_summary": {
+                    "type": "string",
+                    "maxLength": 500
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "max_book_stock": {
+                    "type": "integer"
+                },
+                "publisher": {
+                    "type": "string",
+                    "maxLength": 50
+                },
+                "title": {
+                    "type": "string",
+                    "maxLength": 50
                 }
             }
         },
