@@ -10,8 +10,8 @@ import (
 )
 
 var (
-	upp, low, num, sym bool
-	tot                uint8
+	upp, low, num, sym, alpha bool
+	tot                       uint8
 )
 
 func Validator(i interface{}) interface{} {
@@ -35,6 +35,25 @@ func Validator(i interface{}) interface{} {
 		}
 	}
 	return nil
+}
+
+func ValidationBook(input string) bool {
+	for _, char := range input {
+		switch {
+		case unicode.IsUpper(char):
+			upp = true
+		case unicode.IsLower(char):
+			low = true
+		default:
+			return false
+		}
+	}
+
+	if !upp || !low {
+		return false
+	}
+
+	return true
 }
 
 func ValidationPassword(password string) bool {

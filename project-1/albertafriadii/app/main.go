@@ -6,10 +6,14 @@ import (
 	"os"
 
 	"golang-mentoring/project-1/albertafriadii/pkg/config"
-	"golang-mentoring/project-1/albertafriadii/pkg/users/delivery/http"
-	"golang-mentoring/project-1/albertafriadii/pkg/users/repository"
-	"golang-mentoring/project-1/albertafriadii/pkg/users/usecase"
+	userController "golang-mentoring/project-1/albertafriadii/pkg/users/delivery/http"
+	userRepo "golang-mentoring/project-1/albertafriadii/pkg/users/repository"
+	userUsecase "golang-mentoring/project-1/albertafriadii/pkg/users/usecase"
 	"golang-mentoring/project-1/albertafriadii/routes"
+
+	bookController "golang-mentoring/project-1/albertafriadii/pkg/books/delivery/http"
+	bookRepo "golang-mentoring/project-1/albertafriadii/pkg/books/repository"
+	bookUsecase "golang-mentoring/project-1/albertafriadii/pkg/books/usecase"
 
 	"github.com/joho/godotenv"
 	"github.com/labstack/echo/v4"
@@ -35,12 +39,17 @@ func main() {
 	var db *gorm.DB = DBConfig.IntializeDB()
 	e := echo.New()
 
-	userRepoInterface := repository.NewUserRepositroy(db)
-	userUsecaseInterface := usecase.NewUserUsecase(userRepoInterface)
-	userUseControllerInterface := http.NewUserController(userUsecaseInterface)
+	userRepoInterface := userRepo.NewUserRepositroy(db)
+	userUsecaseInterface := userUsecase.NewUserUsecase(userRepoInterface)
+	userControllerInterface := userController.NewUserController(userUsecaseInterface)
+
+	bookRepoInterface := bookRepo.NewBookDBRepository(db)
+	bookUsecaseInterface := bookUsecase.NewBookUsecase(bookRepoInterface, userRepoInterface)
+	bookControllerInterface := bookController.NewBookController(bookUsecaseInterface)
 
 	initRoutes := routes.RouteList{
-		UsersController: *userUseControllerInterface,
+		UsersController: *userControllerInterface,
+		BooksContoller:  *bookControllerInterface,
 	}
 
 	initRoutes.RouteUsers(e)

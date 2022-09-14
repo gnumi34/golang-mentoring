@@ -8,14 +8,14 @@ import (
 )
 
 type InputCreateUser struct {
-	UserId     string `json:"user_id"`
+	UserId     uint   `json:"user_id"`
 	Username   string `json:"username" validate:"required"`
 	Email      string `json:"email" validate:"required,email"`
 	Password   string `json:"password_1" validate:"required,min=8"`
 	Repassword string `json:"password_2" validate:"required,min=8"`
 }
 type InputUpdateUser struct {
-	UserId           string `json:"user_id"`
+	UserId           uint   `json:"user_id"`
 	Username         string `json:"username" validate:"required"`
 	Email            string `json:"email"`
 	ExistingPassword string `json:"existing_password"`
@@ -33,28 +33,31 @@ type Result struct {
 }
 
 type Users struct {
-	UserId    string         `gorm:"column:user_id" json:"user_id"`
-	Username  string         `gorm:"column:username" json:"username" validate:"required"`
-	Email     string         `gorm:"column:email" json:"email" validate:"required,email"`
-	Password  string         `gorm:"column:password" json:"password" validate:"required,min=8"`
-	CreatedAt time.Time      `gorm:"column:created_at" json:"created_at"`
-	UpdatedAt time.Time      `gorm:"column:updated_at" json:"updated_at"`
-	DeletedAt gorm.DeletedAt `gorm:"index" json:"deleted_at"`
+	UserId    uint           `gorm:"primaryKey"`
+	Username  string         `gorm:"column:username"`
+	Email     string         `gorm:"column:email"`
+	Password  string         `gorm:"column:password"`
+	CreatedAt time.Time      `gorm:"column:created_at"`
+	UpdatedAt time.Time      `gorm:"column:updated_at"`
+	DeletedAt gorm.DeletedAt `gorm:"index"`
 }
 
 type UserUsecaseInterface interface {
+	FindAll(ctx context.Context) ([]Users, error)
 	LoginUser(ctx context.Context, req *GetUser) (*Result, error)
 	CreateUser(ctx context.Context, u *Users) (*Users, error)
-	UpdateUser(ctx context.Context, existPassword string, u *Users, UserID string) error
-	DeleteUser(ctx context.Context, UserID string) error
+	UpdateUser(ctx context.Context, existPassword string, u *Users) error
+	DeleteUser(ctx context.Context, UserID uint) error
 }
 
 type UserRepositoryInterface interface {
-	GetUser(ctx context.Context, UserID string) (*Users, error)
+	FindAll(ctx context.Context) ([]Users, error)
+	GetUser(ctx context.Context, UserID uint) (*Users, error)
+	FindUserByUsername(ctx context.Context, Username string) (*Users, error)
 	LoginUser(ctx context.Context, Username string) (*Users, error)
 	CreateUser(ctx context.Context, u *Users) (*Users, error)
-	UpdateUser(ctx context.Context, u *Users, UserID string) error
-	DeleteUser(ctx context.Context, UserID string) error
+	UpdateUser(ctx context.Context, u *Users) error
+	DeleteUser(ctx context.Context, UserID uint) error
 }
 
 func FromUserDomain(u *Users) *Users {

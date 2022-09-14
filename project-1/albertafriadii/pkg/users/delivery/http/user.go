@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"strconv"
 
 	"golang-mentoring/project-1/albertafriadii/pkg/config"
 	"golang-mentoring/project-1/albertafriadii/pkg/domain"
@@ -17,6 +18,27 @@ type UserController struct {
 
 func NewUserController(u domain.UserUsecaseInterface) *UserController {
 	return &UserController{usecase: u}
+}
+
+// FindAll godoc
+// @Summary      Find all users
+// @Description  Find all users
+// @Tags         FindAll
+// @Produce      json
+// @Success      200
+// @Failure		 400
+// @Router       /user/findall [get]
+func (c *UserController) FindAll(ctx echo.Context) error {
+	users, err := c.usecase.FindAll(ctx.Request().Context())
+	if err != nil {
+		if errors.Is(err, config.ErrNotFound) {
+			return domain.ErrResponse(ctx, http.StatusNotFound, config.ErrNotFound)
+		}
+
+		return domain.ErrResponse(ctx, http.StatusInternalServerError, config.ErrInternalServerError)
+	}
+
+	return domain.SuccessDataResponse(ctx, users)
 }
 
 // LoginUser godoc
@@ -108,9 +130,17 @@ func (c *UserController) CreateUser(ctx echo.Context) error {
 // @Failure		 400
 // @Router       /user/{user_id} [put]
 func (c *UserController) UpdateUser(ctx echo.Context) error {
-	u := domain.InputUpdateUser{}
-	bindErr := ctx.Bind(&u)
+	var userID int
+	var err error
+	var u domain.InputUpdateUser
+
 	UserID := ctx.Param("user_id")
+	userID, err = strconv.Atoi(UserID)
+	if err != nil {
+		return domain.ErrResponse(ctx, http.StatusBadRequest, errors.New("Invalid ID"))
+	}
+
+	bindErr := ctx.Bind(&u)
 	if bindErr != nil {
 		return domain.ErrResponse(ctx, http.StatusBadRequest, errors.New("data bind error"))
 	}
@@ -118,6 +148,10 @@ func (c *UserController) UpdateUser(ctx echo.Context) error {
 	validationErr := config.Validator(u)
 	if validationErr != nil {
 		return domain.ErrValidResponse(ctx, http.StatusBadRequest, validationErr)
+	}
+
+	if uint(userID) != u.UserId {
+		return domain.ErrResponse(ctx, http.StatusBadRequest, errors.New("Invalid ID"))
 	}
 
 	if u.Username == "" {
@@ -140,7 +174,7 @@ func (c *UserController) UpdateUser(ctx echo.Context) error {
 		u.Password, u.Repassword = "", ""
 	}
 
-	err := c.usecase.UpdateUser(ctx.Request().Context(), u.ExistingPassword, u.ToUpdateUserDomain(), UserID)
+	err = c.usecase.UpdateUser(ctx.Request().Context(), u.ExistingPassword, u.ToUpdateUserDomain())
 	if err != nil {
 		errStatus, errMessage := config.ErrUpdateUserCheck(err)
 		return domain.ErrResponse(ctx, errStatus, errMessage)
@@ -159,11 +193,18 @@ func (c *UserController) UpdateUser(ctx echo.Context) error {
 // @Failure		 400
 // @Router       /user/{user_id} [delete]
 func (c *UserController) DeleteUser(ctx echo.Context) error {
-	userID := ctx.Param("user_id")
+	var userID int
+	var err error
 
-	err := c.usecase.DeleteUser(ctx.Request().Context(), userID)
+	UserID := ctx.Param("user_id")
+	userID, err = strconv.Atoi(UserID)
 	if err != nil {
-		errStatus, errMessage := config.ErrDeleteUserCheck(err)
+		return domain.ErrResponse(ctx, http.StatusBadRequest, errors.New("Invalid ID"))
+	}
+
+	err = c.usecase.DeleteUser(ctx.Request().Context(), uint(userID))
+	if err != nil {
+		errStatus, errMessage := config.ErrDeleteCheck(err)
 		return domain.ErrResponse(ctx, errStatus, errMessage)
 	}
 	return domain.OkResponse(ctx)
