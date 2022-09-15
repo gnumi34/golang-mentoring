@@ -15,6 +15,7 @@ type Response struct {
 func SuccessDataResponse(c echo.Context, data interface{}) error {
 	r := Response{}
 	r.Data = data
+	r.Message = "OK"
 	return c.JSON(http.StatusOK, r)
 }
 
@@ -33,11 +34,11 @@ func SuccessMessageResponse(c echo.Context, message string) error {
 func ErrResponse(c echo.Context, status int, err error) error {
 	r := Response{}
 	r.Error = err.Error()
-	return c.JSON(http.StatusInternalServerError, r)
+	return c.JSON(status, r)
 }
 
 func ErrValidResponse(c echo.Context, status int, err interface{}) error {
 	r := Response{}
 	r.Error = err
-	return c.JSON(http.StatusInternalServerError, r)
+	return c.JSON(status, r)
 }

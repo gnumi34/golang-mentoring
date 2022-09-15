@@ -13,7 +13,6 @@ import (
 	"github.com/joho/godotenv"
 
 	"github.com/golang-jwt/jwt"
-	uuid "github.com/satori/go.uuid"
 )
 
 type userUsecase struct {
@@ -24,6 +23,15 @@ func NewUserUsecase(u domain.UserRepositoryInterface) domain.UserUsecaseInterfac
 	return &userUsecase{
 		userRepo: u,
 	}
+}
+
+func (uc *userUsecase) FindAll(ctx context.Context) ([]domain.Users, error) {
+	users, err := uc.userRepo.FindAll(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	return users, nil
 }
 
 func (uc *userUsecase) LoginUser(ctx context.Context, req *domain.GetUser) (*domain.Result, error) {
@@ -67,25 +75,21 @@ func (uc *userUsecase) CreateUser(ctx context.Context, u *domain.Users) (*domain
 
 	var err error
 
-	if u.UserId == "" {
-		u.UserId = uuid.NewV4().String()
-	}
-
 	u.Password, err = config.HashPassword(u.Password)
 	if err != nil {
 		fmt.Println(err)
-		return &domain.Users{}, nil
+		return nil, err
 	}
 
-	u, err = uc.userRepo.CreateUser(ctx, u)
+	users, err := uc.userRepo.CreateUser(ctx, u)
 	if err != nil {
 		fmt.Println(err)
-		return &domain.Users{}, err
+		return nil, err
 	}
-	return u, nil
+	return users, nil
 }
 
-func (uc *userUsecase) UpdateUser(ctx context.Context, existPassword string, u *domain.Users, UserID string) error {
+func (uc *userUsecase) UpdateUser(ctx context.Context, existPassword string, u *domain.Users) error {
 	user, err := uc.userRepo.GetUser(ctx, u.UserId)
 	if err != nil {
 		return err
@@ -103,7 +107,7 @@ func (uc *userUsecase) UpdateUser(ctx context.Context, existPassword string, u *
 		}
 	}
 
-	err = uc.userRepo.UpdateUser(ctx, u, UserID)
+	err = uc.userRepo.UpdateUser(ctx, u)
 	if err != nil {
 		fmt.Println(err)
 		return err
@@ -112,7 +116,7 @@ func (uc *userUsecase) UpdateUser(ctx context.Context, existPassword string, u *
 	return nil
 }
 
-func (uc *userUsecase) DeleteUser(ctx context.Context, UserID string) error {
+func (uc *userUsecase) DeleteUser(ctx context.Context, UserID uint) error {
 	err := uc.userRepo.DeleteUser(ctx, UserID)
 	if err != nil {
 		fmt.Println(err)
